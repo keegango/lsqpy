@@ -16,11 +16,11 @@ def isScalar(obj): return True if isinstance(obj,SCALARTYPES) else False
 def constToAffine(obj,rows,cols):
 	if isScalar(obj):
 		new_affine = Affine(rows,cols)
-		new_affine.coefs[Affine.CONST] = obj*sparse.csc_matrix(np.ones((rows,cols)))
+		for j in range(cols): new_affine.vectors[j][Affine.CONST] = obj*sparse.csc_matrix(np.ones((rows,1)))
 	else:
-		shape = (1,obj.shape[0]) if len(obj.shape) == 1 else obj.shape
+		shape = mutils.getShape(obj)
 		new_affine = Affine(shape[0],shape[1])
-		new_affine.coefs[Affine.CONST] = sparse.csc_matrix(obj)
+		for j in range(cols): new_affine.vectors[j][Affine.CONST] = sparse.csc_matrix(obj[:,j:j+1])
 	return new_affine
 
 class Affine:
@@ -37,48 +37,54 @@ class Affine:
 
 	def __init__(self,rows,cols):
 		self.rows,self.cols = rows,cols
-		self.coefs = {}
+		self.vectors = [{} for _ in range(self.cols)]
 	
 	def printme(self):
-		for var in self.coefs:
-			print(var)
-			print(self.coefs[var].todense())
+		print('***************************')
+		for j in range(self.cols):
+			print('column '+str(j))
+			for key in self.vectors[j]:
+				if key == Affine.CONST: print('Constant')
+				else:
+					var,i = key
+					print('Variable '+var.getName()+' column '+str(i))
+				print(self.vectors[j][key].todense())
+			print('-----------------------')
+		print('***************************')
 
 	""" Return basic information about this affine expression """
 	def size(self): return (self.rows,self.cols)
-	def getCoefs(self): return self.coefs
-	def getVars(self): return [key for key in self.coefs]
-	def getLinear(self,var_order):
-		if Affine.CONST in var_order: var_order.remove(Affine.CONST)
-		height = self.rows * self.cols
-		return sparse.hstack([mutils.toColumn(self.coefs[var]) if var in self.coefs else sparse.csc_matrix((height,1)) for var in var_order])
+	
+	""" Access to data for problem solving """
+	def getLinear(self,num_vars):
+		mat_list = []
+		for j in range(self.cols):
+			mat = mutils.zeros(self.rows,num_vars,sparse.lil_matrix)
+			for key in self.vectors[j]:
+				if key == Affine.CONST: continue
+				var,col = key
+				mat[:,var.getColIndices(col)] = self.vectors[j][key]
+			mat_list.append(mat)
+		return sparse.vstack(mat_list).tocsc()
 	def getConst(self):
-		if Affine.CONST in self.coefs: return self.coefs[Affine.CONST]
-		else: return mutils.zeros(self.rows*self.cols,1)
+		mat_list = []
+		for j in range(self.cols):
+			if Affine.CONST in self.vectors[j]: mat_list.append(self.vectors[j][Affine.CONST])
+			else: mat_list.append(mutils.zeros(self.rows,1))
+		return sparse.vstack(mat_list).tocsc()
 	
 	""" Functions to shape the affine expression """
-	def T(self):
-		pass
-	def reshape(self,new_rows,new_cols):
-		pass
+	def T(self): pass # TODO
+	def reshape(self,new_rows,new_cols): pass # TODO
 	def slice(self,row_indices = [0],col_indices = [0]):
 		""" Returns an affine expression of the subset of rows and cols specified """
-		if len(row_indices) == 0 or len(col_indices) == 0:
-			print('Warning: empty slice specified')
-			return None
-		if max(row_indices) >= self.rows or max(col_indices) >= self.cols:
-			print('Warning: slice index exceeds dimension')
-			return None
-		num_rows,num_cols = len(row_indices),len(col_indices)
-		new_affine = Affine(num_rows,num_cols)
-		row_slicer = [[i] for i in row_indices]
-		for key in self.coefs: new_affine.coefs[key] = self.coefs[key][row_slicer,col_indices]
-		return new_affine
+		pass #TODO
 
 	""" Define the basic functions to combine affine expressions """
 	def scale(self,val):
 		new_affine = Affine(self.rows,self.cols)
-		for key in self.coefs: new_affine.coefs[key] = val * self.coefs[key]
+		for j in range(self.cols):
+			for key in self.vectors[j]: new_affine.vectors[j][key] = val * self.vectors[j][key]
 		return new_affine
 
 	def lMulMat(self,mat):
@@ -90,19 +96,12 @@ class Affine:
 			return None
 		new_affine = Affine(mat_shape[0],self.cols)
 		mat = sparse.csc_matrix(mat)
-		for key in self.coefs: new_affine.coefs[key] = mat.dot(self.coefs[key])
+		for j in range(self.cols):
+			for key in self.vectors[j]: new_affine.vectors[j][key] = mat.dot(self.vectors[j][key])
 		return new_affine
 	def rMulMat(self,mat):
 		""" Perform self*mat """
-		mat_shape = mutils.getShape(mat)
-		if not mat_shape[0] == self.cols:
-			print('Warning: matrix multiplication failed due to size mismatch')
-			print(str(self.size()) + ' * ' + str(mat_shape))
-			return None
-		new_affine = Affine(self.rows,mat_shape[1])
-		mat = sparse.csc_matrix(mat)
-		for key in self.coefs: new_affine.coefs[key] = self.coefs[key].dot(mat)
-		return new_affine
+		pass # TODO
 
 	""" Overload the operators """
 	def __eq__(self,other): return EqConstraint(self,other)
@@ -115,10 +114,11 @@ class Affine:
 			print(str(self.size()) + ' + ' + str(other.size()))
 			return None
 		new_affine = Affine(self.rows,self.cols)
-		for key in self.coefs: new_affine.coefs[key] = self.coefs[key]
-		for key in other.coefs:
-			if key in self.coefs: new_affine.coefs[key] += other.coefs[key]
-			else: new_affine.coefs[key] = other.coefs[key]
+		for j in range(self.cols):
+			for key in self.vectors[j]: new_affine.vectors[j][key] = self.vectors[j][key]
+			for key in other.vectors[j]:
+				if key in self.vectors[j]: new_affine.vectors[j][key] += other.vectors[j][key]
+				else: new_affine.vectors[j][key] = other.vectors[j][key]
 		return new_affine
 	def __radd__(self,other): return self.__add__(other)
 	def __sub__(self,other):
