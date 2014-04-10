@@ -23,7 +23,7 @@ class Variable(Affine):
 		
 		self.name = name if name else 'Var'+str(self.id)
 		self.primal_value = sparse.csc_matrix((rows,cols)).todense() # Replace with zeros for clarity
-		for j in range(self.cols): self.vectors[j][(self,j)] = sparse.identity(rows)
+		for j in range(self.cols): self.vectors[j][(self,j)] = sparse.identity(rows).tocsc()
 
 	""" Return information about variable """
 	def getValue(self): return self.primal_value

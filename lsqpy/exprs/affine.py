@@ -2,6 +2,7 @@
 """
 
 import lsqpy.util.matutils as mutils
+import lsqpy.util.indexutils as iutils
 from ..constraint.eq_constraint import EqConstraint
 
 import numpy as np
@@ -76,9 +77,23 @@ class Affine:
 	""" Functions to shape the affine expression """
 	def T(self): pass # TODO
 	def reshape(self,new_rows,new_cols): pass # TODO
-	def slice(self,row_indices = [0],col_indices = [0]):
-		""" Returns an affine expression of the subset of rows and cols specified """
-		pass #TODO
+	def __getitem__(self,indices):
+		if self.cols == 1 and self.rows == 1: raise IndexError("Cannot index a scalar expression")
+		if not isinstance(indices,tuple):
+			if self.rows == 1: indices = (slice(0,1,1),indices)
+			elif self.cols == 1: indices = (indices,slice(0,1,1))
+			else: raise IndexError("Invalid index")
+		indices = iutils.formatSlices(indices,(self.rows,self.cols))
+		if indices[0].stop > self.rows or indices[1].stop > self.cols: raise IndexError("Invalid index")
+		new_num_rows = iutils.numElem(indices[0],self.rows)
+		new_num_cols = iutils.numElem(indices[1],self.cols)
+		new_affine = Affine(new_num_rows,new_num_cols)
+		new_col = 0
+		for j in iutils.sliceToRange(indices[1],self.cols):
+			for key in self.vectors[j]:
+				new_affine.vectors[new_col][key] = self.vectors[j][key][indices[0],:]
+			new_col += 1
+		return new_affine
 
 	""" Define the basic functions to combine affine expressions """
 	def scale(self,val):
@@ -117,7 +132,8 @@ class Affine:
 		for j in range(self.cols):
 			for key in self.vectors[j]: new_affine.vectors[j][key] = self.vectors[j][key]
 			for key in other.vectors[j]:
-				if key in self.vectors[j]: new_affine.vectors[j][key] += other.vectors[j][key]
+				if key in self.vectors[j]:
+					new_affine.vectors[j][key] = self.vectors[j][key] + other.vectors[j][key]
 				else: new_affine.vectors[j][key] = other.vectors[j][key]
 		return new_affine
 	def __radd__(self,other): return self.__add__(other)
