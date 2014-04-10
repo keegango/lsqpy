@@ -41,6 +41,12 @@ b = np.array([[1],[2],[7]])
 c = np.array(range(0,9)).reshape((3,3))
 (x+c).printme()
 
+print('slicing')
+y[0:3:2].printme()
+x[0:3:2,1:3].printme()
+q = Variable(1,n)
+(q[0:3:2] + q[1:]).printme()
+
 if False:
 	print('test large')
 	w = Variable(10000000)
