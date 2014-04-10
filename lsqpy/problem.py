@@ -9,9 +9,9 @@ from scipy.sparse import linalg
 
 class Problem:
 	""" Formulation of a least squares problem """
-	def __init__(self, normsq_expr, constraint_arr = []):
+	def __init__(self, sumsq_expr, constraint_arr = []):
 		self.eq_consts = constraint_arr
-		self.normsq_expr = normsq_expr
+		self.sumsq_expr = sumsq_expr
 
 	def collectVars(self):
 		""" Make a list of all variables used """
@@ -25,17 +25,17 @@ class Problem:
 	def solve(self): 
 		""" First get a list of all the variables and the number of new constraints we need """
 		n = Variable.INDEX
-		num_new_constraints = self.normsq_expr.num_constraints()
+		num_new_constraints = self.sumsq_expr.num_constraints()
 		
 		""" Create constraint matrices including those implicit constraints """
 		constraint_mat = sparse.vstack(
-			[aff.getLinear(Variable.INDEX) for aff in self.normsq_expr.sq_terms] +
+			[aff.getLinear(Variable.INDEX) for aff in self.sumsq_expr.sq_terms] +
             [eq_const.getLinear(Variable.INDEX) for eq_const in self.eq_consts])
 		constraint_mat = sparse.hstack(
 			[constraint_mat,-1*sparse.eye(constraint_mat.shape[0],num_new_constraints)]).tocsc()
 
 		constraint_const = sparse.vstack(
-			[-aff.getConst() for aff in self.normsq_expr.sq_terms] + 
+			[-aff.getConst() for aff in self.sumsq_expr.sq_terms] + 
 			[-eq_const.getConst() for eq_const in self.eq_consts])
 
 		""" Form the KKT_matrix to solve and solve it """

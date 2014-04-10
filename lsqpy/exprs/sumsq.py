@@ -3,10 +3,10 @@ Class to represent normsq expressions that that are made up of a
 sum of normsq(affine) terms possibly plus an affine
 """
 
-from lsqpy.exprs.affine import *
+from lsqpy.exprs.affine import Affine
 import math
 
-class NormSqExpr:
+class SumSqExpr:
 	def __init__(self, sq_terms=[], affine_term=Affine(1,1)):
 		self.sq_terms = sq_terms
 		self.affine_term = affine_term
@@ -16,7 +16,7 @@ class NormSqExpr:
 		
 	""" Addition is collecting the square terms and adding the affine component """
 	def __add__(self,other):
-		return NormSqExpr(self.sq_terms+other.sq_terms,self.affine_term+other.affine_term)
+		return SumSqExpr(self.sq_terms+other.sq_terms,self.affine_term+other.affine_term)
 	def __radd__(self,other): return self.__add__(other)
 
 	""" Multiplication is scaling each square term by sqrt(other) and the affine by other """
@@ -24,14 +24,14 @@ class NormSqExpr:
 		if other < 0:
 			print("Can only multiply a Norm Square Expression by a positive constant")
 			return None
-		new_sq_expr = NormSqExpr()
+		new_sq_expr = SumSqExpr()
 		const = math.sqrt(other)
 		new_sq_expr.sq_terms = [const*aff for aff in self.sq_terms]
 		new_sq_expr.affine_term = other*self.affine_term
 		return new_sq_expr
 	def __rmul__(self,other): return self.__mul__(other)
 
-def normsq(affine_term):
-	new_normsq_expr = NormSqExpr()
-	new_normsq_expr.sq_terms = [affine_term]
-	return new_normsq_expr
+def sumsq(affine_term):
+	new_sumsq_expr = SumSqExpr()
+	new_sumsq_expr.sq_terms = [affine_term]
+	return new_sumsq_expr

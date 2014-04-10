@@ -3,7 +3,7 @@
 
 import lsqpy.util.matutils as mutils
 import lsqpy.util.indexutils as iutils
-from ..constraint.eq_constraint import EqConstraint
+from lsqpy.constraint.eq_constraint import EqConstraint
 
 import numpy as np
 from scipy import sparse
@@ -101,7 +101,6 @@ class Affine:
 		for j in range(self.cols):
 			for key in self.vectors[j]: new_affine.vectors[j][key] = val * self.vectors[j][key]
 		return new_affine
-
 	def lMulMat(self,mat):
 		""" Perform mat*self """
 		mat_shape = mutils.getShape(mat)
@@ -118,7 +117,7 @@ class Affine:
 		""" Perform self*mat """
 		pass # TODO
 
-	""" Overload the operators """
+	""" Overload the rest of the operators """
 	def __eq__(self,other): return EqConstraint(self,other)
 	def __neg__(self): return self.scale(-1)
 	
