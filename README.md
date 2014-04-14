@@ -23,9 +23,9 @@ lsqpy only has a few types of objects that you need to work with. Here is an exa
 
 ### Variables
 
-	x = Variable(3)                             # Create a variable
-	y = Variable()                              # A scalar variable
-	z = Variable(10,4)                          # A matrix variable
+	x = Variable(3)                             # Create a variable (3x1)
+	y = Variable()                              # A scalar variable (1x1)
+	z = Variable(10,4)                          # A matrix variable (10x4)
 
 Variables are the start of all lsqpy expressions. They can be a scalar, a vector, or a matrix.
 
@@ -71,6 +71,53 @@ Note: the left hand side of the equality is expected to have the same dimensions
 The 'minimize' function is called when it is time to solve the least-squares problem you have created. It takes as arguments an objective that is a sumsq expression, and a list of equality constraints to apply. The function will then attempt to solve. If a solution is found, the value of a variable can be obtained by calling the method getValue() on the variable.
 
 There are two cases where 'minimize' will be unable to solve the problem. The first is when the system is over-determined ... The system may also be under-determined in which case ...
+
+## Another Example
+
+The following block of code solves a basic control problem in which we wish to find a series of inputs that allow us to reach waypoints along a path at certain times while minimize fuel use. The position at time i can be described as
+
+TODO: inset math properly
+
+x(i+1) = A*x(i) + b*u(i) and the fuel use is sum(u(i)^2).
+
+The problem can be solved with the following code
+
+    # Define the state and input matrices
+	A = np.array([[1, 0.5],[0, 2]])
+	b = np.array([[0.4, 0.5]]).T
+	
+	# Set level of discretization
+	T = 100
+	
+	# Set some way points at T/4 intervals
+	x0 = np.array([[0, 0]]).T
+	xq1 = np.array([[10, 6]]).T
+	xh1 = np.array([[-14,-3]]).T
+	xq3 = np.array([[5,10]]).T
+	xf = x0
+	
+	# Create variables
+	x = Variable(2,T+1)
+	u = Variable(T)
+	
+	# Create equality constraints
+	eq_constraints = []
+	# Add time update constraints
+	for i in range(T): eq_constraints.append(x[:,i+1] == A*x[:,i] + b*u[i])
+	# Add waypoint constraints
+	eq_constraints.append(x[:,0] == x0)
+	eq_constraints.append(x[:,T//4] == xq1)
+	eq_constraints.append(x[:,T//2] == xh1)
+	eq_constraints.append(x[:,3*T//4] == xq3)
+	eq_constraints.append(x[:,T] == xf)
+	
+	# Create objective, we also minimize x to ensure our path
+	# doesn't take us too far from the origin
+	objective = sumsq(x)+100*sumsq(u)
+	
+	# Solve the problem and print our control vector
+	minimize(objective,eq_constraints)
+	print(u.getValue())
 
 ## Installing lsqpy
 
