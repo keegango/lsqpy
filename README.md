@@ -1,24 +1,29 @@
 #lsqpy
 
-lsqpy is a library that makes it easy to formulate and solve least-squares optimization problems with linear constraints. With lsqpy, these types of problems can be created using a natural syntax for variables, constraints, and objectives that mirror standard mathematical notation.
+lsqpy is a library that makes it easy to formulate and solve least-squares optimization problems with linear equality constraints. With lsqpy, these types of problems can be created using a natural syntax for variables, constraints, and objectives that mirror standard mathematical notation.
 
 lsqpy's syntax and format are modelled on those of [cvxpy](https://github.com/cvxgrp/cvxpy "cvxpy"), a python library that handles the larger class of convex optimization problems.
 
 ##Getting Started
-lsqpy only has a few types of objects that you need to work with. Here is an example of a small program.
 
-    # Generate some data for a small example
-	A = numpy.array(range(12)).reshape(4,3)
-	b = numpy.array([[8,15,4,3]]).T
-	
-	x = Variable(3)                             # Create a variable
-	expression = A*x + b                        # Create an affine
-	objective = sum_sq(expression) + 10*sum_sq(x) # Create an objective
-	constraint = x[2] == 20                     # Create an equality constraint
-	minimize(objective,[constraint])            # Solve the problem
-	print(x.getValue())                         # Display the results
+Here is an introductory example to lsqpy.
 
-TODO HELLO WORLD 1,2
+  	A = np.array(range(12)).reshape(4,3)
+	b = np.array([[8,15,4,3]]).T
+    
+	x = Variable(3) # a variable vector of length 3
+	minimize(sumsq(A*x + b) + 10*sumsq(x) ,[x[2] == 20])
+	print(x.getValue())
+
+In this example, x is our unknown variable that we wish to solve for. The function 'minimize' takes two arguments: an objective to minimize, and a list of linear equality constraints that must be satisfied. Our goal is to find which x makes the objective as small as possible, while still obeying the constraints. Running the above code prints:
+
+	Begin minimization
+	Solved, value = 9005.03
+	[[ -8.61 ]
+	 [-15.035]
+	 [ 20.   ]]
+
+As we expected we found a value for x which clearly satisfies our constraint. Less obviously, this is the x which minimizes our objective as well.
 
 ## Installing lsqpy
 
