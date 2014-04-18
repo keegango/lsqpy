@@ -1,5 +1,5 @@
 from lsqpy.exprs.variable import Variable
-from lsqpy.exprs.sumsq import sumsq
+from lsqpy.exprs.sum_sq import sum_sq
 from lsqpy.minimize import minimize
 
 import numpy as np
@@ -13,7 +13,7 @@ if test_num == 1:
 	x = Variable(4)
 	A = np.array([[1,2,3,10],[5,4,6,11],[9,7,8,12]]);
 	b = np.array([[16,26,36]]).T
-	minimize(sumsq(x),[A*x == b])
+	minimize(sum_sq(x),[A*x == b])
 	print(x.getValue())
 
 elif test_num == 2:
@@ -21,7 +21,7 @@ elif test_num == 2:
 	x = Variable(4)
 	A = np.array([[1,2,3,10],[5,4,6,11],[9,7,8,12]]);
 	b = np.array([[16,26,36]]).T
-	objective = sumsq(A*x+b)+100*sumsq(x)
+	objective = sum_sq(A*x+b)+100*sum_sq(x)
 	const_val = np.array([[100,100]]).T
 	constraint = const_val == x[2:4]
 	minimize(objective,[constraint])
@@ -36,8 +36,8 @@ elif test_num == 3:
 	x = Variable(3)
 	# Create an affine
 	affine_expression = A*x + b
-	# Create a sumsq to use for the objective
-	objective = sumsq(affine_expression) + 10*sumsq(x) 
+	# Create a sum_sq to use for the objective
+	objective = sum_sq(affine_expression) + 10*sum_sq(x) 
 	# Create an equality constraint
 	constraint = x[2] == 20
 	# Solve the problem
@@ -73,8 +73,15 @@ elif test_num == 4:
 	eq_constraints.append(x[:,T] == xf)
 	
 	# Create objective
-	objective = sumsq(x)+100*sumsq(u)
+	objective = sum_sq(x)+100*sum_sq(u)
 	
 	# Solve the problem and print our control vector
 	minimize(objective,eq_constraints)
 	print(u.getValue())
+	
+elif test_num == 5:
+	A = np.array(range(12)).reshape(4,3)
+	b = np.array([[8,15,4,3]]).T
+	x = Variable(3)
+	minimize(sum_sq(A*x + b) + 10*sum_sq(x) ,[x[2] == 20])
+	print(x.getValue())

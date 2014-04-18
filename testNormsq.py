@@ -3,7 +3,7 @@ Test for norm square expressions
 """
 
 from lsqpy.exprs.variable import Variable
-from lsqpy.exprs.sumsq import sumsq
+from lsqpy.exprs.sum_sq import sum_sq
 
 def printns(ns):
 	print('has '+str(len(ns.sq_terms))+' sq terms')
@@ -14,6 +14,6 @@ def printns(ns):
 z = Variable(2)
 x = Variable(2)
 
-nse = sumsq(z)+2*sumsq(x)
+nse = sum_sq(z)+2*sum_sq(x)
 printns(nse)
 print(nse.num_constraints()) # includes implicit constraints

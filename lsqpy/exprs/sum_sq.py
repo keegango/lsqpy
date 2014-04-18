@@ -31,7 +31,7 @@ class SumSqExpr:
 		return new_sq_expr
 	def __rmul__(self,other): return self.__mul__(other)
 
-def sumsq(affine_term):
+def sum_sq(affine_term):
 	new_sumsq_expr = SumSqExpr()
 	new_sumsq_expr.sq_terms = [affine_term]
 	return new_sumsq_expr
