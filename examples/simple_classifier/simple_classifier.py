@@ -16,7 +16,7 @@ from data import X,y,n
 # Solve the problem, and print the result
 a = Variable(2)
 minimize(sum_sq(X*a-y),[])
-print(a.getValue())
+print(a.value)
 
 # Plot the line we found
 plt.plot(X[y[:,0]>=0,0],X[y[:,0]>=0,1],'ro')
@@ -24,7 +24,7 @@ plt.plot(X[y[:,0]<0,0],X[y[:,0]<0,1],'bo')
 
 t = np.arange(-5.0, 5.0, 0.1)
 
-plt.plot(t,(-a.getValue()[0,0]*t)/a.getValue()[1,0])
+plt.plot(t,(-a.value[0,0]*t)/a.value[1,0])
 plt.xlabel('x')
 plt.ylabel('y')
 plt.show()

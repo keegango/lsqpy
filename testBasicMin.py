@@ -14,7 +14,7 @@ if test_num == 1:
 	A = np.array([[1,2,3,10],[5,4,6,11],[9,7,8,12]]);
 	b = np.array([[16,26,36]]).T
 	minimize(sum_sq(x),[A*x == b])
-	print(x.getValue())
+	print(x.value)
 
 elif test_num == 2:
 	print('another basic problem')
@@ -25,7 +25,7 @@ elif test_num == 2:
 	const_val = np.array([[100,100]]).T
 	constraint = const_val == x[2:4]
 	minimize(objective,[constraint])
-	print(x.getValue())
+	print(x.value)
 
 elif test_num == 3:
 	print('really concise test')
@@ -42,7 +42,7 @@ elif test_num == 3:
 	constraint = x[2] == 20
 	# Solve the problem
 	minimize(objective,[constraint]) 
-	print(x.getValue())
+	print(x.value)
 
 elif test_num == 4:
 	# Define the state and input matrices
@@ -77,11 +77,12 @@ elif test_num == 4:
 	
 	# Solve the problem and print our control vector
 	minimize(objective,eq_constraints)
-	print(u.getValue())
+	print(u.value)
 	
 elif test_num == 5:
 	A = np.array(range(12)).reshape(4,3)
 	b = np.array([[8,15,4,3]]).T
 	x = Variable(3)
 	minimize(sum_sq(A*x + b) + 10*sum_sq(x) ,[x[2] == 20])
-	print(x.getValue())
+	print(x.value)
+	

@@ -22,18 +22,20 @@ class Variable(Affine):
 		Variable.VAR_LIST.append(self)
 		
 		self.name = name if name else 'Var'+str(self.id)
-		self.primal_value = sparse.csc_matrix((rows,cols)).todense() # Replace with zeros for clarity
+		self.value = None
 		for j in range(self.cols): self.vectors[j][(self,j)] = sparse.identity(rows).tocsc()
 
 	""" Return information about variable """
-	def getValue(self): return self.primal_value
 	def getName(self): return self.name
 	def getColIndices(self,col):
 		start = self.index+self.rows*col
 		return list(range(start,start+self.rows))
 	def extractValues(self,solution):
-		for j in range(self.cols):
-			self.primal_value[:,j:j+1] = solution[np.newaxis,self.getColIndices(j)].T
+		if solution is None: self.value = None
+		else:
+			self.value = sparse.csc_matrix((self.rows,self.cols)).todense()
+			for j in range(self.cols):
+				self.value[:,j:j+1] = solution[np.newaxis,self.getColIndices(j)].T
 
 	""" Re-override equality operator so that we can hash with it"""
 	def __eq__(self,other):
