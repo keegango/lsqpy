@@ -47,6 +47,10 @@ x[0:3:2,1:3].printme()
 q = Variable(1,n)
 (q[0:3:2] + q[1:]).printme()
 
+print('\nsum')
+sum(y).printme()
+sum(x).printme()
+
 if False:
 	print('\ntest large')
 	w = Variable(10000000)

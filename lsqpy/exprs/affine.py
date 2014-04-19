@@ -26,8 +26,8 @@ def constToAffine(obj,rows,cols):
 
 class Affine:
 	"""
-		Represents a sent of affine expressions. We have one dictionary
-		giving the coefficients for each element of each variable
+		Represents a sent of affine expressions. We have one dictionary per column.
+		The dictionary's keys are variables and the values are matrices.
 	"""
 	
 	""" Change array priority so that we can overload operators correctly """
@@ -149,3 +149,18 @@ class Affine:
 	def __rmul__(self,other):
 		if isScalar(other): return self.scale(other)
 		else: return self.lMulMat(other)
+	
+	""" Code to make affine iterable (for sum) """
+	def __iter__(self):
+		if self.rows == 1 and self.cols == 1:
+			print('Scalar variables are not iterable')
+			return None
+		self.iter_index = 0
+		return self
+	def __next__(self):
+		if self.iter_index >= self.rows*self.cols:
+			del self.iter_index
+			raise StopIteration
+		else:
+			self.iter_index += 1
+			return self[(self.iter_index-1)%self.rows,(self.iter_index-1)//self.rows]

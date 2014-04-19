@@ -85,4 +85,11 @@ elif test_num == 5:
 	x = Variable(3)
 	minimize(sum_sq(A*x + b) + 10*sum_sq(x) ,[x[2] == 20])
 	print(x.value)
+
+elif test_num == 6:
+	A = np.array(range(12)).reshape(4,3)
+	b = np.array([[8,15,4,3]]).T
+	x = Variable(3)
+	minimize(sum_sq(A*x + b) + 10*sum_sq(x) ,[sum(x) == 10])
+	print(x.value)
 	
