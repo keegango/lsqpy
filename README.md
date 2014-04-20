@@ -27,8 +27,28 @@ As we expected we found a value for x which clearly satisfies our constraint. Le
 
 ## Installing lsqpy
 
-TODO
+lsqpy relies on several programs/packages.
 
+### Python
+
+Python is a widely used scripting language. lsqpy is a Python library which means that in order to use it you will need to download and install python on your machine. Python can be download here(link). You will need Python version 3.
+
+### Scipy and Numpy
+
+Scipy(link) and Numpy(link) are two Python libraries that provide support for many numeric tasks including formatting and computing maxtrix quantities. lsqpy makes use of these libraries to represent vectors and matrices. Note you will need to make sure that you download the versions of Scipy and Numpy that match your version of python. You can check your version of Python by calling 'python -v' from your commandline.
+
+### setuptools
+
+
+### lsqpy
+
+lsqpy is available for download ...
+
+### matplotlib
+
+One optional but extremely useful utility is matplotlib. It is a Python library that allows you to plot and view data. This library works with Numpy as well so be sure to install that first. Installing matplotlib may also require two other python libraries that do not come standard with Python: python-dateutil and pyparsing. These can be obatined using easy_instal or pip.
+
+For example: ...
 ## Full Specification
 ### Variables
 
