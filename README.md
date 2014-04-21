@@ -2,7 +2,7 @@
 
 lsqpy is a library that makes it easy to formulate and solve least-squares optimization problems with linear equality constraints. With lsqpy, these types of problems can be created using a natural syntax for variables, constraints, and objectives that mirror standard mathematical notation.
 
-lsqpy's syntax and format are modelled on those of [cvxpy](https://github.com/cvxgrp/cvxpy "cvxpy"), a python library that handles the larger class of convex optimization problems.
+lsqpy's syntax and format are modelled on those of [cvxpy](https://github.com/cvxgrp/cvxpy "cvxpy"), a Python library that handles the larger class of convex optimization problems.
 
 ##Getting Started
 
@@ -15,7 +15,7 @@ Here is an introductory example to lsqpy.
 	minimize(sumsq(A*x + b) + 10*sumsq(x) ,[x[2] == 20])
 	print(x.getValue())
 
-In this example, x is our unknown variable that we wish to solve for. The function 'minimize' takes two arguments: an objective to minimize, and a list of linear equality constraints that must be satisfied. Our goal is to find which x makes the objective as small as possible, while still obeying the constraints. Running the above code prints:
+In this example, x is our unknown variable that we wish to solve for. The function 'minimize' takes two arguments: an objective to minimize, and a list of linear equality constraints that must be satisfied. Our goal is to find which value of x makes the objective as small as possible, while still obeying the constraints. Running the above code prints:
 
 	Begin minimization
 	Solved, value = 9005.03
@@ -31,14 +31,17 @@ lsqpy relies on several programs/packages.
 
 ### Python
 
-Python is a widely used scripting language. lsqpy is a Python library which means that in order to use it you will need to download and install python on your machine. Python can be download here(link). You will need Python version 3.
+[Python](https://www.python.org/downloads/,"Python download") is a widely used scripting language. Make sure you are using Python version 3 rather than 2.
 
-### Scipy and Numpy
+### SciPy and NumPy
 
-Scipy(link) and Numpy(link) are two Python libraries that provide support for many numeric tasks including formatting and computing maxtrix quantities. lsqpy makes use of these libraries to represent vectors and matrices. Note you will need to make sure that you download the versions of Scipy and Numpy that match your version of python. You can check your version of Python by calling 'python -v' from your commandline.
+[SciPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") and [NumPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") are two Python libraries that provide support for many numeric tasks including formatting and computing maxtrix quantities. lsqpy makes use of these libraries to represent vectors and matrices. Note you will need to make sure that you download the versions of SciPy and NumPy that match your version of python. You can check your version of Python by calling 'python -v' from your commandline.
+
+Note: if you are running Windows (especially 64-bit) this [site](http://www.lfd.uci.edu/~gohlke/pythonlibs/,"Numpy for Windows") will have the packages you need.
 
 ### setuptools
 
+[setuptools](https://pypi.python.org/pypi/setuptools,"setuptools") is a useful utility for installing Python modules. If you want to install lsqpy from source you will need this.
 
 ### lsqpy
 
@@ -46,10 +49,12 @@ lsqpy is available for download ...
 
 ### matplotlib
 
-One optional but extremely useful utility is matplotlib. It is a Python library that allows you to plot and view data. This library works with Numpy as well so be sure to install that first. Installing matplotlib may also require two other python libraries that do not come standard with Python: python-dateutil and pyparsing. These can be obatined using easy_instal or pip.
+One optional but extremely useful utility is matplotlib. It is a Python library that allows you to plot and view data. This library requires NumPy as well so be sure to install that first. Installing matplotlib may also require two other python libraries that do not come standard with Python: python-dateutil and pyparsing. These can be obatined using easy_install or pip.
 
 For example: ...
+
 ## Full Specification
+
 ### Variables
 
 	x = Variable(3)                             # Create a variable (3x1)
