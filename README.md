@@ -57,17 +57,17 @@ For example: ...
 
 ### Variables
 
-	x = Variable(3)                             # Create a variable (3x1)
-	y = Variable()                              # A scalar variable (1x1)
-	z = Variable(10,4)                          # A matrix variable (10x4)
+	x = Variable(3) # Create a vector variable that has 3 rows and 1 columns
+	y = Variable() # A scalar variable
+	z = Variable(10,4) # A matrix variable that has 10 rows and 4 columns
 
-Variables are the start of all lsqpy expressions. They can be a scalar, a vector, or a matrix.
+Variables represent the quantities that we want to find by solving a least squares problem. For example, a vector might be used to represent prices for a number of goods, or a matrix might be used to represent the location of an object at a number of time steps. lsqpy can handle scalar, vector and matrix variables making it easy formulate variables for nearly any kind of problem.
 
 ### Affine Expressions
 
 	expression = A*x + b                        # Create an affine
 
-Affine expressions are built from variables and constants. In particular an affine expression can be created in any of the following ways:
+Affine expressions are built from a combination of variable, constants, and other affine expressions.
 * Two variables are added or subtracted
 * A variable is added, subtracted, or multiplied by a constant (scalar or matrix)
 * Two affine expressions are added or subracted
@@ -79,7 +79,7 @@ Remember that all affine expressions, and variables as well, have dimensions and
 
 ### Equality Constraints
 
-	constraint = x[2] == 20                     # Create an equality constraint
+	constraint = (x[2] == 20) # Create an equality constraint, parentheses for clarity
 
 Constraints are created with the '==' operation. These constraints can be formed in the following situations:
 * variable == constant : A variable may be set equal to a constant (scalar or matrix, see note)
@@ -91,11 +91,12 @@ Note: the left hand side of the equality is expected to have the same dimensions
 
 ### Sum of Squares Expressions
 
-	objective = sum_sq(expression) + 10*sumsq(x) # Create an objective
+	objective = sum_sq(expression) + 10*sum_sq(x) # Create an objective
 
-lsqpy handles objectives that are formed by summing the squares of the entries of an affine expression. As in the example above, a sumsq expression is formed by first creating a variable or affine expression then calling the function sumsq() on it. sumsq expressions can also be combined in two ways:
-* The sum of two sumsq expressions is also a sumsq expression
-* A sumsq expression can be multiplied by a positive scalar to produce a new sumsq expression
+The objective of least-squares problems are sum of squares expressions, which are made by summing the squares of the entries of one or more affine expressions. In the simplest case, we might 
+lsqpy handles objectives that are formed by summing the squares of the entries of an affine expression. As in the example above, a sum of squares expression is formed by first creating a variable or affine expression then calling the function sum_sq on it. Sum of squares expressions can also be created in two ways:
+* Two sum of squares expressions can be summed to form another sum of squares expression
+* A sum of squares expression multiplied by a positive scalar is also a sum of squares expression
 
 ### Solving
 
