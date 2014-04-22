@@ -6,9 +6,23 @@ lsqpy's syntax and format are modelled on those of [cvxpy](https://github.com/cv
 
 ##Getting Started
 
-![alt text](https://github.com/keegango/lsqpy/blob/master/images/linreg_data.png "linreg data")
+Let's look at an example of what lsqpy can do. The files for this example are in [examples/simple_linreg](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/ "linreg_example").
 
-![alt text](https://github.com/keegango/lsqpy/blob/master/images/linreg_results.png "linreg results")
+First we should visualize the data. In this example, the plotting is built into the data file so we can just run
+
+	python data.py
+	
+which shows
+
+![data](https://github.com/keegango/lsqpy/raw/master/images/linreg_data.png "linreg data")
+
+Since the data looks approximately linear, we can try fit a line to it. We can express our line as the fuction
+
+	f(x) = slope*x + offset
+	
+but how do we determine these parameters.
+
+![results](https://github.com/keegango/lsqpy/raw/master/images/linreg_results.png "linreg results")
 
 ## Installing lsqpy
 
