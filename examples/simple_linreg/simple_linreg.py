@@ -18,9 +18,8 @@ from data import n,x_data,y_data
 # Solve the problem, and print the result
 slope = Variable()
 offset = Variable()
-minimize(sum_sq(x_data*slope+offset.broadcast(n,1)-y_data))
-slope.value
-offset.value
+minimize(sum_sq(x_data*slope+offset-y_data))
+print('slope='+str(slope.value)+', offset='+str(offset.value))
 
 t = np.arange(0, 5.0, 0.1)
 

@@ -134,10 +134,17 @@ class Affine:
 	
 	def __add__(self,other):
 		if isValidConst(other): other = constToAffine(other,self.rows,self.cols)
+		
+		""" If one of the expressions is a scalar, broadcast it """
+		if self.isScalar() and not other.isScalar(): return self.broadcast(other.rows,other.cols)+other
+		elif other.isScalar() and not self.isScalar(): return self+other.broadcast(self.rows,self.cols)
+		
 		if not self.rows == other.rows or not self.cols == other.cols:
 			print('Warning: matrix add/sub failed due to size mismatch')
 			print(str(self.size()) + ' + ' + str(other.size()))
 			return None
+		
+		""" Copy new keys """
 		new_affine = Affine(self.rows,self.cols)
 		for j in range(self.cols):
 			for key in self.vectors[j]: new_affine.vectors[j][key] = self.vectors[j][key]
