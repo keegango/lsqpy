@@ -16,11 +16,13 @@ which shows
 
 ![data](https://github.com/keegango/lsqpy/raw/master/images/linreg_data.png "linreg data")
 
-Since the data looks approximately linear, we can try fit a line to it. We can express our line as the fuction
+The data is given as two lists: a list of x coordiantes, and a list of y coordinates. The plot above has points for each value of x paired with its corresponding value of y.
 
-	f(x) = slope*x + offset
+Since the data looks approximately linear, we can try fit a line to it. We can express our line as the function
+
+	f(x) = slope*x_value + offset
 	
-but how do we determine these parameters.
+If we knew the values for slope and offset, we would be able to predict what the value of y for any value of x just by plugging it into the function. This means the value of f(x) is our prediction of y should be given some value for x.
 
 ![results](https://github.com/keegango/lsqpy/raw/master/images/linreg_results.png "linreg results")
 
