@@ -6,7 +6,9 @@ lsqpy's syntax and format are modelled on those of [cvxpy](https://github.com/cv
 
 ##Getting Started
 
+![alt text](https://github.com/keegango/lsqpy/blob/master/images/linreg_data.png "linreg data")
 
+![alt text](https://github.com/keegango/lsqpy/blob/master/images/linreg_results.png "linreg results")
 
 ## Installing lsqpy
 
