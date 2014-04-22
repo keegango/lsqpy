@@ -51,6 +51,9 @@ print('\nsum')
 sum(y).printme()
 sum(x).printme()
 
+print('\nbroadcast')
+z.broadcast(3,3).printme()
+
 if False:
 	print('\ntest large')
 	w = Variable(10000000)

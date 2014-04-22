@@ -55,6 +55,7 @@ class Affine:
 
 	""" Return basic information about this affine expression """
 	def size(self): return (self.rows,self.cols)
+	def isScalar(self): return True if self.rows == 1 and self.cols == 1 else False
 	
 	""" Access to data for problem solving """
 	def getLinear(self,num_vars):
@@ -77,6 +78,16 @@ class Affine:
 	""" Functions to shape the affine expression """
 	def T(self): pass # TODO
 	def reshape(self,new_rows,new_cols): pass # TODO
+	def broadcast(self,new_rows,new_cols):
+		if not self.isScalar():
+			print("Cannot broadcast a matrix")
+			return None
+		new_affine = Affine(new_rows,new_cols)
+		for key in self.vectors[0]:
+			new_mat = sparse.vstack([self.vectors[0][key] for _ in range(new_rows)])
+			for j in range(new_cols): new_affine.vectors[j][key] = new_mat
+		return new_affine
+	""" For slicing """
 	def __getitem__(self,indices):
 		if self.cols == 1 and self.rows == 1: raise IndexError("Cannot index a scalar expression")
 		if not isinstance(indices,tuple):

@@ -13,18 +13,19 @@ import matplotlib.pyplot as plt
 # Import the test data
 # n is the number of data points
 # x_data is n x 1, as is y_data
-from data import x_data,y_data,n
+from data import n,x_data,y_data
 
 # Solve the problem, and print the result
 slope = Variable()
 offset = Variable()
-minimize(sum_sq(x*slope-y),[])
-print(a.value)
+minimize(sum_sq(x_data*slope+offset.broadcast(n,1)-y_data))
+slope.value
+offset.value
 
-t = np.arange(0, 10.0, 0.2)
+t = np.arange(0, 5.0, 0.1)
 
 plt.plot(x_data,y_data,'ro')
-plt.plot(t,(-a.value[0,0]*t)/a.value[1,0])
+plt.plot(t,(slope.value[0,0]*t + offset.value[0,0]))
 plt.xlabel('x')
 plt.ylabel('y')
 plt.show()
