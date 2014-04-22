@@ -22,7 +22,13 @@ Since the data looks approximately linear, we can try fit a line to it. We can e
 
 	f(x) = slope*x_value + offset
 	
-If we knew the values for slope and offset, we would be able to predict what the value of y for any value of x just by plugging it into the function. This means the value of f(x) is our prediction of y should be given some value for x.
+If we knew the values for slope and offset, we would be able to predict the value of y for any value of x just by plugging it into the function. This means the value of f(x) is our prediction of y for some value for x.
+
+With this idea of prediction, good values for slope and offset should make our predictions close to the actual values of y. We should then choose values that minimize this difference between the predicted and actual over all our points. One way to do this would be to sum the differences between predicted and actual values but note that these differences could be positive or negative. Thus, it makes more sense to sum the squares of the differences. This formulation can be written as an optimization problem:
+
+	insert latex here
+
+Let's now execute our method using lsqpy. This example only requires this small amount of code:
 
 ![results](https://github.com/keegango/lsqpy/raw/master/images/linreg_results.png "linreg results")
 
