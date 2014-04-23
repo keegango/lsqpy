@@ -1,30 +1,29 @@
 """
-A simple classifier
+A simple regression problem
 """
 
+# Import lsqpy
 from lsqpy.exprs.variable import Variable
 from lsqpy.exprs.sum_sq import sum_sq
 from lsqpy.minimize import minimize
 
-# For plotting
-import numpy as np
-import matplotlib.pyplot as plt
-
 # Import the test data
-# n is the number of data points
-# x_data is n x 1, as is y_data
-from data import n,x_data,y_data
+from data import x_data,y_data
 
 # Solve the problem, and print the result
 slope = Variable()
 offset = Variable()
 minimize(sum_sq(x_data*slope+offset-y_data))
-print('slope='+str(slope.value)+', offset='+str(offset.value))
+print('slope = '+str(slope.value[0,0])+', offset = '+ str(offset.value[0,0]))
 
+# Include plotting
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Print results and plot
 t = np.arange(0, 5.0, 0.1)
-
+plt.figure(0,(3,3))
 plt.plot(x_data,y_data,'ro')
 plt.plot(t,(slope.value[0,0]*t + offset.value[0,0]))
-plt.xlabel('x')
-plt.ylabel('y')
+plt.xlabel('x'), plt.ylabel('y')
 plt.show()
