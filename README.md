@@ -6,7 +6,7 @@ lsqpy's syntax and format are modelled on those of [cvxpy](https://github.com/cv
 
 ##Getting started
 
-We begin with an example of simple linear regression - the problem of trying to fit a line to some data. The goal of this example is to show what lsqpy looks like, and also give an example of a least-squares problem. If you are already familiar with least-squares problems skip to [code](#code "Code section").
+We begin with an example of simple linear regression - the problem of trying to fit a line to some data. The goal of this example is to show what lsqpy looks like, and also give an example of working through a least-squares problem. If you are already familiar with least-squares problems skip to [code](#code "Code section").
 
 The files for this example are in [examples/simple_linreg](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/ "linreg_example").
 
@@ -32,21 +32,21 @@ A general function for a line is:
 
 where slope and offset are scalar quantities that we pick to determine the line.
 
-We would like our data points to be "close" this line for some choice of slope and offset. To define "close", and we measure a residual defined as
+We would like our data points to be "close" the line given by the slope and offset we pick. To define "close", we measure a residual defined as
 
 	residual = f(x) - y = slope*x + offset - y
 
 for each point (x,y) in our data. Note that when the residual for a point is 0, the line passes through the point ( y = f(x) ). Therefore, we should try to choose a slope and offset so that the residual for each point is near zero.
 
-Since we have multiple points but can only choose slope and offset once, we need to find an expression that combines all the residuals. Using the sum of residuals is an intuitive answer but the problem is that residuals as defined are negative when they fall below our line. Because of this, the sum of residuals is not a good metric to use since this expression could be close to zero even if the line is not a good fit.
+Since we have multiple points but can only choose slope and offset once, we need to find an expression that combines all the residuals. Using the sum of residuals is an intuitive answer but the problem is that residuals as defined are negative when the point falls below the line. Because of this, the sum of residuals is not a good metric to use since this expression could be close to zero even if the line is not a good fit.
 
 A solution is to instead sum the squares of the residuals. Squares are always non-negative so both positive and negative residuals contribute a positive amount to the sum. This means that when the sum is small, we are assured that the residuals are also small, and not just cancelling each other out.
 
-Therefore, to find the best solution we will find the slope and offset that minimize
+To find the best solution we will find the slope and offset that minimize
 
-	total_residual_sq = sum square(slope*x+offset - y) for each point (x,y)
+	total_residual_sq = sum of square(slope*x+offset - y) for each point (x,y)
 
-It turns out that this is now a least-squares problem, so we can go ahead and solve it with lsqpy.
+This is now a least-squares problem, so we can go ahead and solve it with lsqpy.
 	
 ### Code
 
@@ -66,7 +66,9 @@ The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/
 	minimize(sum_sq(x_data*slope+offset-y_data))
 	print('slope = '+str(slope.value[0,0])+', offset = '+ str(offset.value[0,0]))
 
-The first section includes lsqpy for use, and the second makes the data accessible. The third section contains the actual work. We first declare two Variables, one for each of the quantities we want to determine. Then we simply call minimize and pass in an expression to minimize. Notice how the expression closely matches the formula for total_residual_sq that we gave above. Calling minimize both finds the minimum value of the expression and sets all variables in the problem with values that achieve this minimum. Finally, we print out the results.
+The first section includes lsqpy for use, and the second makes the data accessible. The third section contains the actual work. We first declare two Variables, one for each of the quantities we want to determine. Then we call the lsqpy function 'minimize' and pass in our expression to minimize. Calling minimize both finds the minimum value of the expression and sets all variables in the problem with values that achieve this minimum. With the values set, all we have to do is print the results.
+
+Notice how the expression we minimize closely matches the formula for total_residual_sq that we gave above. One of the great things about lsqpy is the simple syntax that makes use of the standard +,-,* operators so that it is easy to translate your expressions into working code.
 
 You can run the above code in your console with
 
@@ -82,11 +84,11 @@ and also display the a plot of the line we found.
 
 ![results](https://github.com/keegango/lsqpy/raw/master/images/linreg_results.png "linreg results")
 
-Visually, the line looks to be a good fit for the data. Looking in data.py, we can see that the true values for the slope and offset are 2 and 10 respectively. Seems like our method worked.
+Visually, the line looks to be a good fit for the data. Looking in data.py, we can see that the true values for the slope and offset are 2 and 10 respectively. Seems like our method worked!
 
 ### Moving foward
 
-Now of course this example is very simple. One could eyeball a line after looking at the plot of the data and obtain the same results. However, the power of lsqpy is that, with essentially the same code, you can solve problems in a huge range of applications. Least-squares problems show up in fields such as finance, control, image analysis, classification and so on. Problems in these arrays could have thousands of variables making it impossible for you to visualize of estimate a solution, but with lsqpy even these problems will be simple to formulate and solve.
+Now of course this example is very simple. One could eyeball a line after looking at the data and obtain the same results. However, the power of lsqpy is that, with essentially the same code, you can solve problems in a huge range of applications. Least-squares problems show up in fields such as finance, control, image analysis, classification and so on. Problems in these areas could have thousands of variables making it impossible for you to visualize the data or estimate a solution, but with lsqpy even these problems will be simple to formulate and solve.
 
 ## Installing lsqpy
 
@@ -106,17 +108,19 @@ Note: if you are running Windows (especially 64-bit) this [site](http://www.lfd.
 
 [setuptools](https://pypi.python.org/pypi/setuptools,"setuptools") is a useful utility for installing Python modules. If you want to install lsqpy from source you will need this.
 
+### lsqpy
+
+Currently, lsqpy is hosted on GitHub as a public repository. To install it, first clone the repository with the command
+
+	git clone https://github.com/keegango/lsqpy.git
+
 Once you have lsqpy cloned, go to that folder and run
 	
 	python setup.py install
 
-### lsqpy
-
-lsqpy is available for download ...
-
 ### matplotlib
 
-One optional but extremely useful utility is matplotlib. It is a Python library that allows you to plot and view data. This library requires NumPy as well so be sure to install that first. Installing matplotlib may also require two other python libraries that do not come standard with Python: python-dateutil and pyparsing. These can be obatined using easy_install or pip.
+One optional but extremely useful utility is matplotlib. It is a Python library that allows you to plot and view data among other things. This library requires NumPy as well so be sure to install that first. Installing matplotlib may also require two other python libraries that do not come standard with Python: python-dateutil and pyparsing. These can be obatined using easy_install or pip.
 
 On windows:
 
@@ -178,8 +182,8 @@ For example,
 ### Solving
 
 	minimize(objective,[constraint])            # Solve the problem
-	print(x.getValue())                         # Display the results
+	print(x.value)                              # Display the results
 
-The 'minimize' function is called when it is time to solve the least-squares problem you have created. It takes as arguments an objective that is a sumsq expression, and a list of equality constraints to apply. The function will then attempt to solve. If a solution is found, the value of a variable can be obtained by calling the method getValue() on the variable.
+The 'minimize' function is called when it is time to solve the least-squares problem you have created. It takes as arguments an objective that is a sum of squares expression, and an optional list of equality constraints to apply. The function will then attempt to solve. If a solution is found, the value of a variable can be obtained as the value property of a variable as shown.
 
 There are two cases where 'minimize' will be unable to solve the problem. The first is when the system is over-determined ... The system may also be under-determined in which case ...
