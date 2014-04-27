@@ -1,6 +1,4 @@
-from lsqpy.exprs.variable import Variable
-from lsqpy.exprs.sum_sq import sum_sq
-from lsqpy.minimize import minimize
+from lsqpy import Variable,sum_sq,minimize
 
 import numpy as np
 
