@@ -3,9 +3,7 @@ A simple regression problem
 """
 
 # Import lsqpy
-from lsqpy.exprs.variable import Variable
-from lsqpy.exprs.sum_sq import sum_sq
-from lsqpy.minimize import minimize
+from lsqpy import Variable,sum_sq,minimize
 
 # Import the test data
 from data import x_data,y_data
