@@ -54,7 +54,7 @@ On windows:
 
 ## Tutorials
 
-### Reguression
+### Regression
 
 This is an example of using lsqpy for regression - the problem of trying to fit a function to some data.
 
@@ -118,11 +118,55 @@ This will print
 
 and also display the a plot of the line we found.
 
-![results](https://github.com/keegango/lsqpy/raw/master/images/reg_lin.png "linreg results")
+![lin_results](https://github.com/keegango/lsqpy/raw/master/images/reg_lin.png "linreg results")
 
 #### Quadratic regression
 
-Visually, the line does not seem to be a good fit for the data. It consistently overestimates points near the middle of the plot, and underestimates points near the edges of the plot. 
+Visually, the line does not seem to be a good fit for the data. It consistently overestimates points near the middle of the plot, and underestimates points near the edges of the plot. Now instead of using a line, let's try to fit a quadratic function to the data.
+
+Our new function will be something of the form
+
+	f(x) = a_0 + a_1*x + a_2*x^2
+
+where a_0, a_1, and a_2 are the variables we are choosing.
+
+To simplify writing this in code, we will create a matrix X that has 3 columns. The first column is all ones and represents the constant contribution. The second column is just x_data. The final column is x_data with its entries squared. To obtain f(x) for each point we just multiply X on the right by the vector
+
+	[[a_0],
+	 [a_1],
+	 [a_2]]
+
+which computes f(x) for each row. This process of generating new data from old is called augmenting.
+
+Here is the code that augments the data and solves the problem (again, plotting omitted)
+
+	# Import lsqpy
+	from lsqpy import Variable,sum_sq,minimize
+	
+	# Import the test data
+	from data import x_data,y_data
+	
+	# Create a variable that holds the coefficients
+	a = Variable(3)
+	
+	# We copy x_data but raise it to different powers
+	# By treating these new columns as other predictors we can fit a quadratic
+	# Here we import numpy to help format our data
+	import numpy as np
+	X = np.hstack([np.power(x_data,i) for i in range(3)])
+	
+	# Solve the problem
+	minimize(sum_sq(X*a - y_data))
+
+The code here is very much the same as the linear regression case. Running
+
+	python simple_quadreg.py
+
+will show the plot
+
+![quad_results](https://github.com/keegango/lsqpy/raw/master/images/reg_quad.png "quadreg results")
+
+Here, the fit looks much better as the function follows the curve of the data.
 
 ## User guide
 
