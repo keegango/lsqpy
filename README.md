@@ -53,9 +53,7 @@ This is now a least-squares problem, so we can go ahead and solve it with lsqpy.
 The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/simple_linreg.py "linreg code") for this example is shown below (with the plotting omitted):
 
 	# Import lsqpy
-	from lsqpy.exprs.variable import Variable
-	from lsqpy.exprs.sum_sq import sum_sq
-	from lsqpy.minimize import minimize
+	from lsqpy import Variable,sum_sq,minimize
 	
 	# Import the test data
 	from data import x_data,y_data
@@ -86,7 +84,7 @@ and also display the a plot of the line we found.
 
 Visually, the line looks to be a good fit for the data. Looking in data.py, we can see that the true values for the slope and offset are 2 and 10 respectively. Seems like our method worked!
 
-### Moving foward
+### Moving forward
 
 Now of course this example is very simple. One could eyeball a line after looking at the data and obtain the same results. However, the power of lsqpy is that, with essentially the same code, you can solve problems in a huge range of applications. Least-squares problems show up in fields such as finance, control, image analysis, classification and so on. Problems in these areas could have thousands of variables making it impossible for you to visualize the data or estimate a solution, but with lsqpy even these problems will be simple to formulate and solve.
 
@@ -100,7 +98,7 @@ lsqpy relies on several other programs/packages.
 
 ### SciPy and NumPy
 
-[SciPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") and [NumPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") are two Python libraries that provide support for many numeric tasks including formatting and computing maxtrix quantities. lsqpy makes use of these libraries to represent and manipulate vectors and matrices. Note you will need to make sure that you download the versions of SciPy and NumPy that match your version of python. You can check your version of Python by calling 'python -v' from your commandline.
+[SciPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") and [NumPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") are two Python libraries that provide support for many numeric tasks including formatting and computing matrix quantities. lsqpy makes use of these libraries to represent and manipulate vectors and matrices. Note you will need to make sure that you download the versions of SciPy and NumPy that match your version of python. You can check your version of Python by calling 'python -v' from your command-line.
 
 Note: if you are running Windows (especially 64-bit) this [site](http://www.lfd.uci.edu/~gohlke/pythonlibs/,"Numpy for Windows") will have the packages you need.
 
@@ -120,7 +118,7 @@ Once you have lsqpy cloned, go to that folder and run
 
 ### matplotlib
 
-One optional but extremely useful utility is matplotlib. It is a Python library that allows you to plot and view data among other things. This library requires NumPy as well so be sure to install that first. Installing matplotlib may also require two other python libraries that do not come standard with Python: python-dateutil and pyparsing. These can be obatined using easy_install or pip.
+One optional but extremely useful utility is matplotlib. It is a Python library that allows you to plot and view data among other things. This library requires NumPy as well so be sure to install that first. Installing matplotlib may also require two other python libraries that do not come standard with Python: python-dateutil and pyparsing. These can be obtained using easy_install or pip.
 
 On windows:
 
@@ -144,7 +142,7 @@ Variables represent the quantities that we want to find. For example, a vector c
 Affine expressions are built from certain combinations of variables, constants, and other affine expressions. These are:
 * Two variables - added or subtracted
 * A variable and a constant - added, subtracted or multiplied
-* Two affine expressions - added or subracted
+* Two affine expressions - added or subtracted
 * An affine expression and a constant - added, subtracted or multiplied
 
 Remember that all affine expressions, and variables as well, have dimensions and can only be combined with appropriately sized expressions.
