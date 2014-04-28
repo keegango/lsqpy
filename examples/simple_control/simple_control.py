@@ -6,15 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Import the way points
-from data import waypoints
-
-# Choose how to discritize time
-T = 200 # The number of timesteps
-h = 0.01 # The time between time intervals
-
-# Other parameters
-mass = 100
-drag = 0.1
+from data import waypoints,T,h,mass,drag
 
 # Declare the variables we need
 position = Variable(2,T)
@@ -26,8 +18,8 @@ constraints = []
 for i in range(T-1):
 	constraints.append(position[:,i+1] == position[:,i] + h * velocity[:,i])
 for i in range(T-1):
-	constraints.append(velocity[:,i+1] == velocity[:,i] + h/mass * force[:,i]) #+ drag * velocity[:,i]
-
+	constraints.append(velocity[:,i+1] == velocity[:,i] + h/mass * force[:,i] - drag*velocity[:,i])
+	
 # Add waypoint constraints
 zero_vector = np.array([[0,0]]).T
 for i in range(6): constraints.append(position[:,T*i//6] == waypoints[:,i:i+1])
@@ -49,6 +41,5 @@ plt.quiver(position.value[0,:],position.value[1,:],
 	velocity.value[0,:],velocity.value[1,:],color='g',headaxislength=5)
 plt.plot(position.value[0,:],position.value[1,:],'r')
 plt.plot(waypoints[0,:],waypoints[1,:],'bo')
-plt.xlabel('x')
-plt.ylabel('y')
+plt.xlim([-6,7])
 plt.show()

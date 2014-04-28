@@ -9,10 +9,9 @@ from lsqpy import Variable,sum_sq,minimize
 from data import x_data,y_data
 
 # Import matplotlib and create the extra variables we need for plotting
-# NumPy imported for matrix manipulation
 import matplotlib.pyplot as plt
 
-# Create a variable
+# Create a variable that holds the coefficients
 a = Variable(3)
 
 # We copy x_data but raise it to different powers
@@ -30,8 +29,8 @@ T = np.hstack([np.power(t,i) for i in range(3)])
 
 # Plot our regressed function
 plt.figure(0,(3,3))
-plt.plot(x_data,y_data,'bo')
-plt.plot(t,T.dot(a.value),'r')
+plt.plot(x_data,y_data,'ro')
+plt.plot(t,T.dot(a.value),'b')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.show()
