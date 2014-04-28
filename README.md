@@ -180,8 +180,8 @@ The data consists a series of waypoints and some additional parameters. In this 
 
 While force is the variable we want to determine, the position and velocity of the object are also unknown since they depend on the force. To solve the problem we will represent all three quantities as variables and use equality constraints to make sure values are consistent. These equality constraints are
 
-p[t+1] = p[t] + h*v[t]
-v[t+1] = v[t] + h/mass*f[t] - drag*v[t]
+	p[t+1] = p[t] + h*v[t]
+	v[t+1] = v[t] + h/mass*f[t] - drag*v[t]
 
 Finally, we need to decide on an objective. Here we will use the combination
 
