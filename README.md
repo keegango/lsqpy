@@ -196,8 +196,9 @@ The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_control
 	# Import lsqpy
 	from lsqpy import Variable,sum_sq,minimize
 	
-	# Import numpy and plotting
+	# Import numpy and create a constant zero vector
 	import numpy as np
+	zero_vector = np.array([[0,0]]).T
 	
 	# Import the way points
 	from data import waypoints,T,h,mass,drag
@@ -213,10 +214,11 @@ The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_control
 		constraints.append(position[:,i+1] == position[:,i] + h * velocity[:,i])
 	for i in range(T-1):
 		constraints.append(velocity[:,i+1] == velocity[:,i] + h/mass * force[:,i] - drag*velocity[:,i])
+		
 	# Add waypoint constraints evenly spaced
-	zero_vector = np.array([[0,0]]).T
 	for i in range(6): constraints.append(position[:,T*i//6] == waypoints[:,i:i+1])
 	constraints.append(position[:,T-1] == zero_vector)
+	
 	# Add velocity constraints
 	constraints.append(velocity[:,0] == zero_vector)
 	constraints.append(velocity[:,T-1] == zero_vector)
