@@ -138,7 +138,7 @@ To simplify writing this in code, we will create a matrix X that has 3 columns. 
 
 which computes f(x) for each row. This process of generating new data from old is called augmenting.
 
-Here is the code that augments the data and solves the problem (again, plotting omitted)
+Here is the [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/simple_quadreg.py "quadreg code") that augments the data and solves the problem (again, plotting omitted)
 
 	# Import lsqpy
 	from lsqpy import Variable,sum_sq,minimize
@@ -167,6 +167,73 @@ will show the plot
 ![quad_results](https://github.com/keegango/lsqpy/raw/master/images/reg_quad.png "quadreg results")
 
 Here, the fit looks much better as the function follows the curve of the data.
+
+### Control
+
+Another example of a least-squares problem is control, where we want to plan how something will move. In our example, we want our object to move from its starting location, reach a number of waypoints at specific times, and then return to rest at the start.
+
+#### Data
+
+The data consists a series of waypoints and some additional parameters. In this problem, time is represented by discrete intervals and our goal is to find a force to apply at each interval that will allow us to visit each of our waypoints at the specified time. In the data, T gives the number of time intervals, and h gives the length of each interval. In addition, we are also given the mass, and drag on the object which we will need to update our velocity at each interval.
+
+#### Formulation
+
+While force is the variable we want to determine, the position and velocity of the object are also unknown since they depend on the force. To solve the problem we will represent all three quantities as variables and use equality constraints to make sure values are consistent. These equality constraints are
+
+p[t+1] = p[t] + h*v[t]
+v[t+1] = v[t] + h/mass*f[t] - drag*v[t]
+
+Finally, we need to decide on an objective. Here we will use a combination
+
+	objective = sum_sq(f[t]) + mu*sum_sq(v[t]) for all t
+
+This object tells us that we want to minimize both the forces we apply as well as the speed of the object. mu is a constant that determines how much we care about the size of the forces versus the size of the velocity.
+
+#### Solution
+
+The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_control/simple_control.py "control code") is shown below (see the source for plotting).
+
+	# Import lsqpy
+	from lsqpy import Variable,sum_sq,minimize
+	
+	# Import numpy and plotting
+	import numpy as np
+	
+	# Import the way points
+	from data import waypoints,T,h,mass,drag
+	
+	# Declare the variables we need
+	position = Variable(2,T)
+	velocity = Variable(2,T)
+	force = Variable(2,T-1)
+	
+	# Create the list of constraints on our variables
+	constraints = []
+	for i in range(T-1):
+		constraints.append(position[:,i+1] == position[:,i] + h * velocity[:,i])
+	for i in range(T-1):
+		constraints.append(velocity[:,i+1] == velocity[:,i] + h/mass * force[:,i] - drag*velocity[:,i])
+	# Add waypoint constraints evenly spaced
+	zero_vector = np.array([[0,0]]).T
+	for i in range(6): constraints.append(position[:,T*i//6] == waypoints[:,i:i+1])
+	constraints.append(position[:,T-1] == zero_vector)
+	# Add velocity constraints
+	constraints.append(velocity[:,0] == zero_vector)
+	constraints.append(velocity[:,T-1] == zero_vector)
+	
+	# Solve the problem
+	mu = 1
+	minimize(mu*sum_sq(velocity)+sum_sq(force),constraints)
+	
+The code roughly divides into three sections. We first create our variables: position, velocity, and force. We then create a list of our equality constraints that enforce consistency in our variables. Finally, we call solve. When you run the code with
+
+	python simple_control.py
+
+you should see a plot showing the trajectory of the object as well as the forces applied. For the code above the plot looks like
+
+![control results](https://github.com/keegango/lsqpy/raw/master/images/control.png "control results")
+
+At this point, you can play around with the value of mu to see how the weighting between force and velocity affects the motion of the object. You could even try include in the objective the sum of squares of the position as well. What will be the effect of that?
 
 ## User guide
 
