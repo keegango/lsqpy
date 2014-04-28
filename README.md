@@ -54,13 +54,15 @@ On windows:
 
 ## Tutorials
 
-We begin with an example of simple linear regression - the problem of trying to fit a line to some data. The goal of this example is to show what lsqpy looks like, and also give an example of working through a least-squares problem. If you are already familiar with least-squares problems skip to [code](#code "Code section").
+### Reguression
+
+This is an example of using lsqpy for regression - the problem of trying to fit a function to some data.
 
 The files for this example are in [examples/simple_linreg](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/ "linreg_example").
 
-### Data
+#### Data
 
-In this problem, we are given n points, represented by two n-by-1 vectors: x_data and y_data. The x and y coordinates of the ith point are given by the ith entries of x_data and y_data respectively. Our goal is to obtain a line that is "close" to all of our points.
+In this problem, we are given n points, represented by two n-by-1 vectors: x_data and y_data. The x and y coordinates of the ith point are given by the ith entries of x_data and y_data respectively.
 
 We should first visualize the [data](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/data.py "linreg data"). In this example, the plotting is built into the data file so we can just run
 
@@ -68,13 +70,11 @@ We should first visualize the [data](https://github.com/keegango/lsqpy/blob/mast
 	
 which shows
 
-![data](https://github.com/keegango/lsqpy/raw/master/images/linreg_data.png "linreg data")
+![data](https://github.com/keegango/lsqpy/raw/master/images/reg_data.png "linreg data")
 
-The data looks like it falls along a line, which makes our choice of linear regression reasonable.
+#### Linear regression
 
-### Method
-
-A general function for a line is:
+We will first try to fit a line to the data. A general function for a line is:
 
 	f(x) = slope*x + offset
 
@@ -82,23 +82,15 @@ where slope and offset are scalar quantities that we pick to determine the line.
 
 We would like our data points to be "close" the line given by the slope and offset we pick. To define "close", we measure a residual defined as
 
-	residual = f(x) - y = slope*x + offset - y
+	residual(x,y) = f(x) - y
 
-for each point (x,y) in our data. Note that when the residual for a point is 0, the line passes through the point ( y = f(x) ). Therefore, we should try to choose a slope and offset so that the residual for each point is near zero.
+for each point (x,y) in our data. Note that when the residual is small in magnitude the value of f(x) is close to y which means the line passes near the point. To account for the residual across multiple points we sum the squares of the residuals to obtain
 
-Since we have multiple points but can only choose slope and offset once, we need to find an expression that combines all the residuals. Using the sum of residuals is an intuitive answer but the problem is that residuals as defined are negative when the point falls below the line. Because of this, the sum of residuals is not a good metric to use since this expression could be close to zero even if the line is not a good fit.
+	total_residual_sq = sum of square(residual(x,y)) for each point (x,y)
 
-A solution is to instead sum the squares of the residuals. Squares are always non-negative so both positive and negative residuals contribute a positive amount to the sum. This means that when the sum is small, we are assured that the residuals are also small, and not just cancelling each other out.
+The values we want for slope and offset will be the ones that minimize total_residual_sq.
 
-To find the best solution we will find the slope and offset that minimize
-
-	total_residual_sq = sum of square(slope*x+offset - y) for each point (x,y)
-
-This is now a least-squares problem, so we can go ahead and solve it with lsqpy.
-	
-### Code
-
-The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/simple_linreg.py "linreg code") for this example is shown below (with the plotting omitted):
+We can now use lsqpy to solve this problem. The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/simple_linreg.py "linreg code") for this example is shown below (with the plotting omitted):
 
 	# Import lsqpy
 	from lsqpy import Variable,sum_sq,minimize
@@ -114,8 +106,6 @@ The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/
 
 The first section includes lsqpy for use, and the second makes the data accessible. The third section contains the actual work. We first declare two Variables, one for each of the quantities we want to determine. Then we call the lsqpy function 'minimize' and pass in our expression to minimize. Calling minimize both finds the minimum value of the expression and sets all variables in the problem with values that achieve this minimum. With the values set, all we have to do is print the results.
 
-Notice how the expression we minimize closely matches the formula for total_residual_sq that we gave above. One of the great things about lsqpy is the simple syntax that makes use of the standard +,-,* operators so that it is easy to translate your expressions into working code.
-
 You can run the above code in your console with
 
 	python simple_linreg.py
@@ -123,18 +113,16 @@ You can run the above code in your console with
 This will print
 
 	Begin minimization
-	Solved, value = 99.2438648725
-	slope = 1.98738700428, offset = -9.77784892255
+	Solved, value = 102.042139506
+	slope = 0.407196109544, offset = 0.238777593277
 
 and also display the a plot of the line we found.
 
-![results](https://github.com/keegango/lsqpy/raw/master/images/linreg_results.png "linreg results")
+![results](https://github.com/keegango/lsqpy/raw/master/images/reg_lin.png "linreg results")
 
-Visually, the line looks to be a good fit for the data. Looking in data.py, we can see that the true values for the slope and offset are 2 and 10 respectively. Seems like our method worked!
+#### Quadratic regression
 
-### Moving forward
-
-Now of course this example is very simple. One could eyeball a line after looking at the data and obtain the same results. However, the power of lsqpy is that, with essentially the same code, you can solve problems in a huge range of applications. Least-squares problems show up in fields such as finance, control, image analysis, classification and so on. Problems in these areas could have thousands of variables making it impossible for you to visualize the data or estimate a solution, but with lsqpy even these problems will be simple to formulate and solve.
+Visually, the line does not seem to be a good fit for the data. It consistently overestimates points near the middle of the plot, and underestimates points near the edges of the plot. 
 
 ## User guide
 
