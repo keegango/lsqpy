@@ -183,11 +183,11 @@ While force is the variable we want to determine, the position and velocity of t
 p[t+1] = p[t] + h*v[t]
 v[t+1] = v[t] + h/mass*f[t] - drag*v[t]
 
-Finally, we need to decide on an objective. Here we will use a combination
+Finally, we need to decide on an objective. Here we will use the combination
 
 	objective = sum_sq(f[t]) + mu*sum_sq(v[t]) for all t
 
-This object tells us that we want to minimize both the forces we apply as well as the speed of the object. mu is a constant that determines how much we care about the size of the forces versus the size of the velocity.
+This objective tells us that we want to minimize both the forces we apply as well as the speed of the object. mu is a constant that determines how much we care about the size of the forces versus the size of the velocity.
 
 #### Solution
 
@@ -232,6 +232,8 @@ The code roughly divides into three sections. We first create our variables: pos
 you should see a plot showing the trajectory of the object as well as the forces applied. For the code above the plot looks like
 
 ![control results](https://github.com/keegango/lsqpy/raw/master/images/control.png "control results")
+
+In the plot above, the black arrows show the force applied to the object at each time step. The green arrows show the velocity, and the red line gives the actual position. Note how the position intersects each of the blue dots that represent the way points. We can also see the force slowing down the object as it returns to the starting position.
 
 At this point, you can play around with the value of mu to see how the weighting between force and velocity affects the motion of the object. You could even try include in the objective the sum of squares of the position as well. What will be the effect of that?
 
