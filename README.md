@@ -233,8 +233,7 @@ you should see a plot showing the trajectory of the object as well as the forces
 
 ![control results](https://github.com/keegango/lsqpy/raw/master/images/control.png "control results")
 
-In the plot above, the black arrows show the force applied to the object at each time step. The green arrows show the velocity, and the red line gives the actual position. Note how the position intersects each of the blue dots that represent the way points. We can also see the force slowing down the object as it returns to the starting position.
-
+In the plot above, the black arrows show the force applied to the object, the green arrows show the velocity, and the red line gives the actual position. Note how the position intersects each of the blue dots that represent the waypoints. 
 At this point, you can play around with the value of mu to see how the weighting between force and velocity affects the motion of the object. You could even try include in the objective the sum of squares of the position as well. What will be the effect of that?
 
 ## User guide
