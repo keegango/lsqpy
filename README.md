@@ -4,7 +4,55 @@ lsqpy is a library that makes it easy to formulate and solve least-squares optim
 
 lsqpy's syntax and format are modelled on those of [cvxpy](https://github.com/cvxgrp/cvxpy "cvxpy"), a Python library that handles the larger class of convex optimization problems.
 
-##Getting started
+## Table of contents
+* [Basic info](#basic-info "Basic info")
+* [Tutorials](#tutorials "Tutorials")
+* [Installing lsqpy](#installing-lsqpy "Installing lsqpy")
+* [User guide](#user-guide "User guide")
+* [The math](#the-math "The math")
+
+## Basic info
+
+### Installing lsqpy
+
+lsqpy relies on several other programs/packages.
+
+#### Python
+
+[Python](https://www.python.org/downloads/,"Python download") is a widely used scripting language. Make sure you are using Python version 3 rather than 2.
+
+#### SciPy and NumPy
+
+[SciPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") and [NumPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") are two Python libraries that provide support for many numeric tasks including formatting and computing matrix quantities. lsqpy makes use of these libraries to represent and manipulate vectors and matrices. Note you will need to make sure that you download the versions of SciPy and NumPy that match your version of python. You can check your version of Python by calling 'python -v' from your command-line.
+
+Note: if you are running Windows (especially 64-bit) this [site](http://www.lfd.uci.edu/~gohlke/pythonlibs/,"Numpy for Windows") will have the packages you need.
+
+#### setuptools
+
+[setuptools](https://pypi.python.org/pypi/setuptools,"setuptools") is a useful utility for installing Python modules. If you want to install lsqpy from source you will need this.
+
+#### lsqpy
+
+Currently, lsqpy is hosted on GitHub as a public repository. To install it, first clone the repository with the command
+
+	git clone https://github.com/keegango/lsqpy.git
+
+Once you have lsqpy cloned, go to that folder and run
+	
+	python setup.py install
+
+#### matplotlib
+
+One optional but extremely useful utility is matplotlib. It is a Python library that allows you to plot and view data among other things. This library requires NumPy as well so be sure to install that first. Installing matplotlib may also require two other Python libraries that do not come standard with Python: python-dateutil and pyparsing. These can be obtained using easy_install or pip.
+
+On windows:
+
+	cd < your python dir >
+	cd Scripts
+	easy_install python-dateutil
+	easy_install pyparsing
+
+## Tutorials
 
 We begin with an example of simple linear regression - the problem of trying to fit a line to some data. The goal of this example is to show what lsqpy looks like, and also give an example of working through a least-squares problem. If you are already familiar with least-squares problems skip to [code](#code "Code section").
 
@@ -88,46 +136,7 @@ Visually, the line looks to be a good fit for the data. Looking in data.py, we c
 
 Now of course this example is very simple. One could eyeball a line after looking at the data and obtain the same results. However, the power of lsqpy is that, with essentially the same code, you can solve problems in a huge range of applications. Least-squares problems show up in fields such as finance, control, image analysis, classification and so on. Problems in these areas could have thousands of variables making it impossible for you to visualize the data or estimate a solution, but with lsqpy even these problems will be simple to formulate and solve.
 
-## Installing lsqpy
-
-lsqpy relies on several other programs/packages.
-
-### Python
-
-[Python](https://www.python.org/downloads/,"Python download") is a widely used scripting language. Make sure you are using Python version 3 rather than 2.
-
-### SciPy and NumPy
-
-[SciPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") and [NumPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") are two Python libraries that provide support for many numeric tasks including formatting and computing matrix quantities. lsqpy makes use of these libraries to represent and manipulate vectors and matrices. Note you will need to make sure that you download the versions of SciPy and NumPy that match your version of python. You can check your version of Python by calling 'python -v' from your command-line.
-
-Note: if you are running Windows (especially 64-bit) this [site](http://www.lfd.uci.edu/~gohlke/pythonlibs/,"Numpy for Windows") will have the packages you need.
-
-### setuptools
-
-[setuptools](https://pypi.python.org/pypi/setuptools,"setuptools") is a useful utility for installing Python modules. If you want to install lsqpy from source you will need this.
-
-### lsqpy
-
-Currently, lsqpy is hosted on GitHub as a public repository. To install it, first clone the repository with the command
-
-	git clone https://github.com/keegango/lsqpy.git
-
-Once you have lsqpy cloned, go to that folder and run
-	
-	python setup.py install
-
-### matplotlib
-
-One optional but extremely useful utility is matplotlib. It is a Python library that allows you to plot and view data among other things. This library requires NumPy as well so be sure to install that first. Installing matplotlib may also require two other python libraries that do not come standard with Python: python-dateutil and pyparsing. These can be obtained using easy_install or pip.
-
-On windows:
-
-	cd < your python dir >
-	cd Scripts
-	easy_install python-dateutil
-	easy_install pyparsing
-
-## Full specification
+## User guide
 
 ### Variables
 
@@ -185,3 +194,7 @@ For example,
 The 'minimize' function is called when it is time to solve the least-squares problem you have created. It takes as arguments an objective that is a sum of squares expression, and an optional list of equality constraints to apply. The function will then attempt to solve. If a solution is found, the value of a variable can be obtained as the value property of a variable as shown.
 
 There are two cases where 'minimize' will be unable to solve the problem. The first is when the system is over-determined ... The system may also be under-determined in which case ...
+
+## The math
+
+TODO
