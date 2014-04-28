@@ -7,12 +7,12 @@ np.random.seed(0)
 n = 100
 
 # Specify the true value of the variable
-true_slope = 2
-true_offset = -10
+true_coefs = np.array([[2, -2, 0.5]]).T
 
 # Generate data
 x_data = np.random.uniform(size=(n,1))*5
-y_data = true_slope*x_data+true_offset + np.random.standard_normal(size=(n,1))
+x_data_expanded = np.hstack([np.power(x_data,i) for i in range(3)])
+y_data = x_data_expanded.dot(true_coefs) + 0.5*np.random.standard_normal(size=(n,1))
 
 
 # Plot data if python was called on this file directly
