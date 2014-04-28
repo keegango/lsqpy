@@ -98,7 +98,7 @@ lsqpy relies on several other programs/packages.
 
 ### SciPy and NumPy
 
-[SciPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") and [NumPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") are two Python libraries that provide support for many numeric tasks including formatting and computing matrix quantities. lsqpy makes use of these libraries to represent and manipulate vectors and matrices. Note you will need to make sure that you download the versions of SciPy and NumPy that match your version of python. You can check your version of Python by calling 'python -v' from your commandline.
+[SciPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") and [NumPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") are two Python libraries that provide support for many numeric tasks including formatting and computing matrix quantities. lsqpy makes use of these libraries to represent and manipulate vectors and matrices. Note you will need to make sure that you download the versions of SciPy and NumPy that match your version of python. You can check your version of Python by calling 'python -v' from your command-line.
 
 Note: if you are running Windows (especially 64-bit) this [site](http://www.lfd.uci.edu/~gohlke/pythonlibs/,"Numpy for Windows") will have the packages you need.
 
@@ -142,7 +142,7 @@ Variables represent the quantities that we want to find. For example, a vector c
 Affine expressions are built from certain combinations of variables, constants, and other affine expressions. These are:
 * Two variables - added or subtracted
 * A variable and a constant - added, subtracted or multiplied
-* Two affine expressions - added or subracted
+* Two affine expressions - added or subtracted
 * An affine expression and a constant - added, subtracted or multiplied
 
 Remember that all affine expressions, and variables as well, have dimensions and can only be combined with appropriately sized expressions.
