@@ -7,6 +7,8 @@ lsqpy's syntax and format are modelled on those of [cvxpy](https://github.com/cv
 ## Table of contents
 * [Basic info](#basic-info "Basic info")
 * [Tutorials](#tutorials "Tutorials")
+	* [Regression](#regression "Regression")
+	* [Control](#control "Control")
 * [Installing lsqpy](#installing-lsqpy "Installing lsqpy")
 * [User guide](#user-guide "User guide")
 * [The math](#the-math "The math")
