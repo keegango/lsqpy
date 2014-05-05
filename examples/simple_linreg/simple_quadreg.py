@@ -8,9 +8,6 @@ from lsqpy import Variable,sum_squares,minimize
 # Import the test data
 from data import x_data,y_data
 
-# Import matplotlib and create the extra variables we need for plotting
-import matplotlib.pyplot as plt
-
 # Create variables that holds the coefficients
 quadratic = Variable()
 slope = Variable()
@@ -28,6 +25,7 @@ t = np.arange(0,5,0.1).reshape(-1,1)
 t_squared = np.power(t,2)
 
 # Plot our regressed function
+import matplotlib.pyplot as plt
 plt.figure(0,(4,4))
 plt.plot(x_data,y_data,'ro')
 plt.plot(t,offset.value[0,0] + t*slope.value[0,0] + t_squared*quadratic.value[0,0],'b')
