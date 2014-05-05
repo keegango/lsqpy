@@ -19,7 +19,7 @@ y_data = x_data_expanded.dot(true_coefs) + 0.5*np.random.standard_normal(size=(n
 import sys
 if(sys.argv[0] == 'data.py'):
 	import matplotlib.pyplot as plt
-	plt.figure(0,(3,3))
+	plt.figure(0,(4,4))
 	plt.plot(x_data,y_data,'ro')
 	plt.xlabel('x')
 	plt.ylabel('y')
