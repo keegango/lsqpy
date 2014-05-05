@@ -185,7 +185,7 @@ where p[t], v[t], and f[t] are the position, velocity, and force respectively at
 
 Finally, we need to decide on an objective. Here we will use the combination
 
-	objective = mu*sum_sq(v[t]) + sum_sq(f[t]) for all t
+	objective = mu*sum_squares(v[t]) + sum_squares(f[t]) for all t
 
 This objective tells us that we want to minimize both the forces we apply as well as the speed of the object. mu is a constant that determines how much we care about the size of the forces versus the size of the velocity.
 
