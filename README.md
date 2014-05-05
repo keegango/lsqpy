@@ -196,14 +196,13 @@ This objective tells us that we want to minimize both the forces we apply as wel
 The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_control/simple_control.py "control code") is shown below (see the source for plotting).
 
 	# Import lsqpy
-	from lsqpy import Variable,sum_sq,minimize
+	from lsqpy import Variable, sum_sq, minimize
 	
-	# Import numpy and create a constant zero vector
-	import numpy as np
-	zero_vector = np.array([[0,0]]).T
+	# Import plotting
+	import matplotlib.pyplot as plt
 	
 	# Import the way points
-	from data import waypoints,T,h,mass,drag
+	from data import initial_velocity, final_position, T, h, mass, drag
 	
 	# Declare the variables we need
 	position = Variable(2,T)
@@ -217,18 +216,18 @@ The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_control
 	for i in range(T-1):
 		constraints.append(velocity[:,i+1] == velocity[:,i] + h/mass * force[:,i] - drag*velocity[:,i])
 		
-	# Add waypoint constraints evenly spaced
-	for i in range(6): constraints.append(position[:,T*i//6] == waypoints[:,i:i+1])
-	constraints.append(position[:,T-1] == zero_vector)
+	# Add position constraints
+	constraints.append(position[:,0] == 0)
+	constraints.append(position[:,T-1] == final_position)
 	
 	# Add velocity constraints
-	constraints.append(velocity[:,0] == zero_vector)
-	constraints.append(velocity[:,T-1] == zero_vector)
+	constraints.append(velocity[:,0] == initial_velocity)
+	constraints.append(velocity[:,T-1] == 0)
 	
 	# Solve the problem
 	mu = 1
 	minimize(mu*sum_sq(velocity)+sum_sq(force),constraints)
-	
+
 The code roughly divides into three sections. We first create our variables: position, velocity, and force. We then create a list of our equality constraints that enforce consistency in our variables. Finally, we call solve. When you run the code with
 
 	python simple_control.py
