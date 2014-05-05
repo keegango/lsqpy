@@ -12,12 +12,3 @@ h = 0.01 # The time between time intervals
 
 mass = 100 # Mass of object
 drag = 0.01 # Drag on object
-
-import sys
-if(sys.argv[0] == 'data.py'):
-	import matplotlib.pyplot as plt
-	plt.figure(0)
-	plt.plot(waypoints[0,:],waypoints[1,:],'bo')
-	plt.xlabel('x')
-	plt.ylabel('y')
-	plt.show()
