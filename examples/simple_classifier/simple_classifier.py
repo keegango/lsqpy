@@ -2,9 +2,8 @@
 A simple classifier
 """
 
-from lsqpy.exprs.variable import Variable
-from lsqpy.exprs.sum_sq import sum_sq
-from lsqpy.minimize import minimize
+# Import lsqpy
+from lsqpy import Variable, sum_squares, minimize
 
 # For plotting
 import numpy as np
@@ -15,7 +14,7 @@ from data import X,y,n
 
 # Solve the problem, and print the result
 a = Variable(2)
-minimize(sum_sq(X*a-y),[])
+minimize(sum_squares(X*a-y),[])
 print(a.value)
 
 # Plot the line we found

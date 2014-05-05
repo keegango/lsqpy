@@ -1,6 +1,6 @@
 """
 Class to represent normsq expressions that that are made up of a
-sum of normsq(affine) terms possibly plus an affine
+sum of sum_squares(affine) terms
 """
 
 from lsqpy.exprs.affine import Affine
@@ -31,7 +31,7 @@ class SumSqExpr:
 		return new_sq_expr
 	def __rmul__(self,other): return self.__mul__(other)
 
-def sum_sq(affine_term):
+def sum_squares(affine_term):
 	new_sumsq_expr = SumSqExpr()
 	new_sumsq_expr.sq_terms = [affine_term]
 	return new_sumsq_expr

@@ -1,5 +1,5 @@
 # Import lsqpy
-from lsqpy import Variable, sum_sq, minimize
+from lsqpy import Variable, sum_squares, minimize
 
 # Import plotting
 import matplotlib.pyplot as plt
@@ -29,7 +29,7 @@ constraints.append(velocity[:,T-1] == 0)
 
 # Solve the problem
 mu = 1
-minimize(mu*sum_sq(velocity)+sum_sq(force),constraints)
+minimize(mu*sum_squares(velocity)+sum_squares(force),constraints)
 
 # Plot the points
 plt.figure(0,(4,4))

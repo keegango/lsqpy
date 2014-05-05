@@ -3,7 +3,7 @@ Do a quadratic fit to the data
 """
 
 # Import lsqpy
-from lsqpy import Variable,sum_sq,minimize
+from lsqpy import Variable,sum_squares,minimize
 
 # Import the test data
 from data import x_data,y_data
@@ -21,14 +21,14 @@ import numpy as np
 X = np.hstack([np.power(x_data,i) for i in range(3)])
 
 # Solve the problem
-minimize(sum_sq(X*a - y_data))
+minimize(sum_squares(X*a - y_data))
 
 # Create some evenly spaced points for plotting, again replicate powers
 t = np.arange(0,5,0.1).reshape(-1,1)
 T = np.hstack([np.power(t,i) for i in range(3)])
 
 # Plot our regressed function
-plt.figure(0,(3,3))
+plt.figure(0,(4,4))
 plt.plot(x_data,y_data,'ro')
 plt.plot(t,T.dot(a.value),'b')
 plt.xlabel('x')

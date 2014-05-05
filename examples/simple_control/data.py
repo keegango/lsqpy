@@ -1,7 +1,6 @@
 import numpy as np
 
-# In this control problem, the object starts from the origin and should
-# reach these waypoints at evenly spaced intervals over its trip
+# In this control problem, the object starts from the origin
 
 # Some constraints on our motion
 # The object should start from the origin, and end at rest
