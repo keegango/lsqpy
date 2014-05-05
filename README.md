@@ -172,22 +172,20 @@ Here, the fit looks much better as the function follows the curve of the data.
 
 ### Control
 
-Another example of a least-squares problem is control, where we want to plan how something will move. In our example, we want our object to move from its starting location, reach a number of waypoints at specific times, and then return to rest at the start.
-
-#### Data
-
-The data consists a series of waypoints and some additional parameters. In this problem, time is represented by discrete intervals and our goal is to find a force to apply at each interval that will allow us to visit each of our waypoints at the specified time. In the data, T gives the number of time intervals, and h gives the length of each interval. In addition, we are also given the mass, and drag on the object which we will need to update our velocity at each interval.
+Another example of a least-squares problem is control, where we want to plan how something will move. In our example, we want to determine the forces that will move our object to a goal position.
 
 #### Formulation
 
-While force is the variable we want to determine, the position and velocity of the object are also unknown since they depend on the force. To solve the problem we will represent all three quantities as variables and use equality constraints to make sure values are consistent. These equality constraints are
+There are 3 unknown quantities in the problem: the force applied, the velocity of the object, and the position of the object. To solve this problem, we will break up time into T points, each h seconds apart. The values of our variables must then satisfy
 
 	p[t+1] = p[t] + h*v[t]
 	v[t+1] = v[t] + h/mass*f[t] - drag*v[t]
 
+where p[t], v[t], and f[t] are the position, velocity, and force respectively at time t. This model is only an approximation of the real dynamics of moving objects, but when h is small enough the model becomes a reasonable approximation.
+
 Finally, we need to decide on an objective. Here we will use the combination
 
-	objective = sum_sq(f[t]) + mu*sum_sq(v[t]) for all t
+	objective = mu*sum_sq(v[t]) + sum_sq(f[t]) for all t
 
 This objective tells us that we want to minimize both the forces we apply as well as the speed of the object. mu is a constant that determines how much we care about the size of the forces versus the size of the velocity.
 
@@ -236,7 +234,7 @@ you should see a plot showing the trajectory of the object as well as the forces
 
 ![control results](https://github.com/keegango/lsqpy/raw/master/images/control.png "control results")
 
-In the plot above, the black arrows show the force applied to the object, the green arrows show the velocity, and the red line gives the actual position. Note how the position intersects each of the blue dots that represent the waypoints. 
+In the plot above, the black arrows show the force applied to the object, and the red line gives the actual position.
 At this point, you can play around with the value of mu to see how the weighting between force and velocity affects the motion of the object. You could even try include in the objective the sum of squares of the position as well. What will be the effect of that?
 
 ## User guide
