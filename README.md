@@ -103,7 +103,7 @@ We can now use lsqpy to solve this problem. The [code](https://github.com/keegan
 	# Solve the problem, and print the result
 	slope = Variable()
 	offset = Variable()
-	minimize(sum_sq(x_data*slope+offset-y_data))
+	minimize(sum_squares(x_data*slope+offset-y_data))
 	print('slope = '+str(slope.value[0,0])+', offset = '+ str(offset.value[0,0]))
 
 The first section includes lsqpy for use, and the second makes the data accessible. The third section contains the actual work. We first declare two Variables, one for each of the quantities we want to determine. Then we call the lsqpy function 'minimize' and pass in our expression to minimize. Calling minimize both finds the minimum value of the expression and sets all variables in the problem with values that achieve this minimum. With the values set, all we have to do is print the results.
@@ -158,7 +158,7 @@ Here is the [code](https://github.com/keegango/lsqpy/blob/master/examples/simple
 	X = np.hstack([np.power(x_data,i) for i in range(3)])
 	
 	# Solve the problem
-	minimize(sum_sq(X*a - y_data))
+	minimize(sum_squares(X*a - y_data))
 
 The code here is very much the same as the linear regression case. Running
 
@@ -224,8 +224,8 @@ The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_control
 	
 	# Solve the problem
 	mu = 1
-	minimize(mu*sum_sq(velocity)+sum_sq(force),constraints)
-
+	minimize(mu*sum_squares(velocity)+sum_squares(force),constraints)
+	
 The code roughly divides into three sections. We first create our variables: position, velocity, and force. We then create a list of our equality constraints that enforce consistency in our variables. Finally, we call solve. When you run the code with
 
 	python simple_control.py
