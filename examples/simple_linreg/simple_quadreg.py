@@ -11,26 +11,26 @@ from data import x_data,y_data
 # Import matplotlib and create the extra variables we need for plotting
 import matplotlib.pyplot as plt
 
-# Create a variable that holds the coefficients
-a = Variable(3)
+# Create variables that holds the coefficients
+quadratic = Variable()
+slope = Variable()
+offset = Variable()
 
-# We copy x_data but raise it to different powers
-# By treating these new columns as other predictors we can fit a quadratic
-# Here we import numpy to help format our data
+# We copy x_data but square the entries
 import numpy as np
-X = np.hstack([np.power(x_data,i) for i in range(3)])
+x_squared = np.power(x_data,2)
 
 # Solve the problem
-minimize(sum_squares(X*a - y_data))
+minimize(sum_squares(offset + x_data*slope + x_squared*quadratic - y_data))
 
 # Create some evenly spaced points for plotting, again replicate powers
 t = np.arange(0,5,0.1).reshape(-1,1)
-T = np.hstack([np.power(t,i) for i in range(3)])
+t_squared = np.power(t,2)
 
 # Plot our regressed function
 plt.figure(0,(4,4))
 plt.plot(x_data,y_data,'ro')
-plt.plot(t,T.dot(a.value),'b')
+plt.plot(t,offset.value[0,0] + t*slope.value[0,0] + t_squared*quadratic.value[0,0],'b')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.show()
