@@ -241,11 +241,11 @@ At this point, you can play around with the value of mu to see how the weighting
 
 ### Variables
 
-	x = Variable(3) # Create a vector variable that has 3 rows and 1 columns
-	y = Variable() # A scalar variable
+	x = Variable() # A scalar variable
+	y = Variable(3) # Create a vector variable with 3 rows and 1 columns
 	z = Variable(10,4) # A matrix variable that has 10 rows and 4 columns
 
-Variables represent the quantities that we want to find. For example, a vector could represent holdings in a portfolio, or a matrix could represent the location of an object over time. lsqpy handles scalar, vector and matrix variables making it simple to create the appropriate variables for any problem.
+Variables represent the quantities that we want to find. lsqpy handles scalar, vector and matrix variables making it simple to create the appropriate variables for any problem.
 
 ### Affine expressions
 
