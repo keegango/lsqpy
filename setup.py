@@ -1,8 +1,12 @@
 from setuptools import setup
+import sys
+
+if sys.version_info < (3, 3):
+    sys.exit("lsqpy requires python 3.3 and above")
 
 setup(
     name='lsqpy',
-    version='0.01',
+    version='0.02',
     author='Keegan Go',
     author_email='keegango@stanford.edu',
     packages=['lsqpy',
