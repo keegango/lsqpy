@@ -90,4 +90,19 @@ elif test_num == 6:
 	x = Variable(3)
 	minimize(sum_squares(A*x + b) + 10*sum_squares(x) ,[sum(x) == 10])
 	print(x.value)
+
+elif test_num == 7:
+	A = np.array(range(12)).reshape(4,3)
+	b = np.array([[8,15,4,3]]).T
+	x = Variable(3)
+	minimize(sum_squares(A*x + b) + 10*sum_squares(x) ,[sum(x) == 10])
+	print(x.value)
+	
+	y = Variable(3)
+	minimize(sum_squares(A*y + b) + 10*sum_squares(y) ,[sum(y) == 10])
+	print(y.value)
+	
+	minimize(sum_squares(A*y + b) + 15*sum_squares(y) + 1*sum_squares(x), [sum(y) == 10])
+	print(x.value)
+	print(y.value)
 	

@@ -5,16 +5,11 @@ from scipy import sparse
 import numpy as np
 
 class Variable(Affine):
-	INDEX = 0
 	ID = 0
 	VAR_LIST = []
 	
 	def __init__(self,rows=1,cols=1,name=None):
 		super().__init__(rows,cols)
-		
-		""" Give an ID which doubles as the start index for maxtrix stuffing """
-		self.index = Variable.INDEX
-		Variable.INDEX += cols*rows
 		
 		self.id = Variable.ID
 		Variable.ID += 1
@@ -30,6 +25,9 @@ class Variable(Affine):
 	def getColIndices(self,col):
 		start = self.index+self.rows*col
 		return list(range(start,start+self.rows))
+	def setIndex(self,index):
+		self.index = index
+		return index + self.cols*self.rows
 	def extractValues(self,solution):
 		if solution is None: self.value = None
 		else:

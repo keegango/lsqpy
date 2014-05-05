@@ -13,24 +13,22 @@ class Problem:
 		self.eq_consts = constraint_arr
 		self.sumsq_expr = sumsq_expr
 
-	def collectVars(self):
-		""" Make a list of all variables used """
-		vars = []
-		for eq_const in self.eq_consts: vars += eq_const.getVars()
-		for affine in self.normsq_expr.sq_terms: vars += affine.getVars()
-		vars = list(set(vars)) # Change to dictionary to avoid large list ops
-		if Affine.CONST in vars: vars.remove(Affine.CONST)
-		return vars
+	def collectVars(self,included_vars):
+		n = 0
+		for aff in self.sumsq_expr.sq_terms: n = aff.indexVariables(included_vars,n)
+		for eq_const in self.eq_consts: n = eq_const.indexVariables(included_vars,n)
+		return n
 
 	def solve(self): 
 		""" First get a list of all the variables and the number of new constraints we need """
-		n = Variable.INDEX
+		included_vars = {}
+		n = self.collectVars(included_vars)
 		num_new_constraints = self.sumsq_expr.num_constraints()
 		
 		""" Create constraint matrices including those implicit constraints """
 		constraint_mat = sparse.vstack(
-			[aff.getLinear(Variable.INDEX) for aff in self.sumsq_expr.sq_terms] +
-            [eq_const.getLinear(Variable.INDEX) for eq_const in self.eq_consts])
+			[aff.getLinear(n) for aff in self.sumsq_expr.sq_terms] +
+            [eq_const.getLinear(n) for eq_const in self.eq_consts])
 		constraint_mat = sparse.hstack(
 			[constraint_mat,-1*sparse.eye(constraint_mat.shape[0],num_new_constraints)]).tocsc()
 
@@ -44,8 +42,7 @@ class Problem:
                               [constraint_mat,mutils.zeros(total_constraints,total_constraints)]])
 		KKT_const = sparse.vstack([mutils.zeros(n+num_new_constraints,1),constraint_const])
 		solution = linalg.spsolve(KKT_mat.tocsc(),KKT_const)
-		#solution = mutils.zeros(n+num_new_constraints,1).todense()
 		
 		""" Write results back to the correct variables """
-		for var in Variable.VAR_LIST: var.extractValues(solution)
+		for var in included_vars: var.extractValues(solution)
 		self.val = solution[n:n+num_new_constraints].T.dot(solution[n:n+num_new_constraints])

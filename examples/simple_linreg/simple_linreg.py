@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 # Solve the problem, and print the result
 slope = Variable()
 offset = Variable()
-minimize(sum_squares(x_data*slope+offset-y_data))
+minimize(sum_squares(offset + x_data*slope - y_data))
 print('slope = '+str(slope.value[0,0])+', offset = '+ str(offset.value[0,0]))
 
 # Print results and plot

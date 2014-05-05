@@ -58,6 +58,21 @@ class Affine:
 	def isScalar(self): return True if self.rows == 1 and self.cols == 1 else False
 	
 	""" Access to data for problem solving """
+	def indexVariables(self,included_vars,num_cols):
+		"""
+			This method is called when problems are being initialized. It runs over all
+			variables in this affine, and sets their index attribute which is their position
+			into the KKT matrix. Returns the new value for num_cols, the number of cols
+			needed so far for the KKT matrix.
+		"""
+		for j in range(self.cols):
+			for key in self.vectors[j]:
+				if key == Affine.CONST: continue
+				var,col = key
+				if not var in included_vars:
+					num_cols = var.setIndex(num_cols)
+					included_vars[var] = 0
+		return num_cols
 	def getLinear(self,num_vars):
 		mat_list = []
 		for j in range(self.cols):
