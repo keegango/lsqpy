@@ -78,7 +78,7 @@ which shows
 
 We will first try to fit a line to the data. A general function for a line is:
 
-	f(x) = slope*x + offset
+	f(x) = offset + slope*x
 
 where slope and offset are scalar quantities that we pick to determine the line.
 
@@ -103,7 +103,7 @@ We can now use lsqpy to solve this problem. The [code](https://github.com/keegan
 	# Solve the problem, and print the result
 	slope = Variable()
 	offset = Variable()
-	minimize(sum_squares(x_data*slope+offset-y_data))
+	minimize(sum_squares(offset + x_data*slope - y_data))
 	print('slope = '+str(slope.value[0,0])+', offset = '+ str(offset.value[0,0]))
 
 The first section includes lsqpy for use, and the second makes the data accessible. The third section contains the actual work. We first declare two Variables, one for each of the quantities we want to determine. Then we call the lsqpy function 'minimize' and pass in our expression to minimize. Calling minimize both finds the minimum value of the expression and sets all variables in the problem with values that achieve this minimum. With the values set, all we have to do is print the results.
@@ -128,37 +128,32 @@ Visually, the line does not seem to be a good fit for the data. It consistently 
 
 Our new function will be something of the form
 
-	f(x) = a_0 + a_1*x + a_2*x^2
+	f(x) = offset + slope*x + quadratic*x^2
 
-where a_0, a_1, and a_2 are the variables we are choosing.
-
-To simplify writing this in code, we will create a matrix X that has 3 columns. The first column is all ones and represents the constant contribution. The second column is just x_data. The final column is x_data with its entries squared. To obtain f(x) for each point we just multiply X on the right by the vector
-
-	[[a_0],
-	 [a_1],
-	 [a_2]]
-
-which computes f(x) for each row. This process of generating new data from old is called augmenting.
+which is similar to the linear function we used previously. The only difference is that we have introduced an x^2 term with a variable coefficient. Along with offset and slope, quadratic is a variable that we wish to determine.
 
 Here is the [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/simple_quadreg.py "quadreg code") that augments the data and solves the problem (again, plotting omitted)
 
 	# Import lsqpy
-	from lsqpy import Variable,sum_sq,minimize
+	from lsqpy import Variable,sum_squares,minimize
 	
 	# Import the test data
 	from data import x_data,y_data
 	
-	# Create a variable that holds the coefficients
-	a = Variable(3)
+	# Import matplotlib and create the extra variables we need for plotting
+	import matplotlib.pyplot as plt
 	
-	# We copy x_data but raise it to different powers
-	# By treating these new columns as other predictors we can fit a quadratic
-	# Here we import numpy to help format our data
+	# Create variables that holds the coefficients
+	quadratic = Variable()
+	slope = Variable()
+	offset = Variable()
+	
+	# We copy x_data but square the entries
 	import numpy as np
-	X = np.hstack([np.power(x_data,i) for i in range(3)])
+	x_squared = np.power(x_data,2)
 	
 	# Solve the problem
-	minimize(sum_squares(X*a - y_data))
+	minimize(sum_squares(offset + x_data*slope + x_squared*quadratic - y_data))
 
 The code here is very much the same as the linear regression case. Running
 
