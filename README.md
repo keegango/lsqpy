@@ -229,33 +229,74 @@ At this point, you can play around with the value of mu to see how the weighting
 
 ### Variables
 
+Variables represent the quantities that we want to find. lsqpy handles scalar, vector and matrix variables as shown below.
+
 	x = Variable() # A scalar variable
 	y = Variable(3) # Create a vector variable with 3 rows and 1 columns
 	z = Variable(10,4) # A matrix variable that has 10 rows and 4 columns
 
-Variables represent the quantities that we want to find. lsqpy handles scalar, vector and matrix variables making it simple to create the appropriate variables for any problem.
+Variables are objects, not numeric quantities. Their value is set by calling either minimize or solve. After these functions are called, the value of a variable can be obtained through its value attribute. For example,
+
+	x = Variable(10)
+	... # Add some constraints
+	minimize(x,constraints)
+	
+	# Print the numeric value of x that minimizes the above problem
+	print(x.value) 
 
 ### Affine expressions
 
-Affine expressions are built from certain combinations of variables, constants, and other affine expressions. These are:
-* Two variables - added or subtracted
-* A variable and a constant - added, subtracted or multiplied
-* Two affine expressions - added or subtracted
-* An affine expression and a constant - added, subtracted or multiplied
+Affine expressions are made from variables, constants, and other affine expressions using the operations +, -, and *. There are a few rules about what can be combined for each operator.
 
-Remember that all affine expressions, and variables as well, have dimensions and can only be combined with appropriately sized expressions.
+For addition and subraction, the two expressions being combined must either have the same dimensions or one of the two must be a scalar. When one expression is a scalar, it is added to each entry of the other expression. For example,
+
+	x = Variable(3)
+	y = Variable(2)
+	z = Variable(3)
+	
+	x + z # Ok
+	x + y # Fails
+	z - x # Ok
+	
+	w = Variable() # A scalar variable
+	x + w # Ok
+	y + 1 # Ok
+
+On the other hand, multiplication will only work between an affine expression and a constant. If either expression is a scalar, the multiplication will work regardless of the size of the other expression.
+
+	x = Variable(3)
+	y = Variable()
+	
+	x*y # Fails, one must be a constant
+	5*x # Ok
+	y*np.array([[1,2,3]])
+
+However, if both expressions are vectors or matrices then their sizes must match in the usual matrix/vector multiplication sense. This means we can only perform A*B if A is m-by-n and B is n-by-p, the inner dimensions match.
+
+	x = Variable(4)
+	A = np.array([[1,2,3,4]]) # A 1-by-4 matrix
+	B = np.array([[1,2,3]]) # A 1-by-3 matrix
+	
+	B*x # Fails
+	A*x # Ok
 
 ### Equality constraints
 
-Equality constraints limit what values our variables can take on. For instance, a control problem might want to specify the position of an object at some moment in time. This would look like
+The '==' operator creates equality constraints between two affine expressions.
 
-	x[:,a_time] == a_position
+	x = Variable()
+	y = Variable()
+	x == y + 2 # An equality constraint
 
-The '==' operator will create equality constraints in the following situations:
-* variable == constant
-* variable == affine
-* affine == constant
-* affine == affine
+Similar to addition or subtraction, an equality constraint can only be created if two expressions have equal dimensions or if one expression is a scalar.
+
+	x = Variable(3,10)
+	y = Variable(4,10)
+	z = Variable() # A scalar variable
+	
+	x == y # Fails
+	x == z # Ok
+	y == 0 # Ok
 
 ### Sum of squares expressions
 The objective of least-squares problems are sum of squares expressions, which are made by summing the square of each entry in one or more affine expressions. For example,
