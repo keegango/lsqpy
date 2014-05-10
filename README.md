@@ -271,14 +271,27 @@ On the other hand, multiplication will only work between an affine expression an
 	5*x # Ok
 	y*np.array([[1,2,3]])
 
-However, if both expressions are vectors or matrices then their sizes must match in the usual matrix/vector multiplication sense. This means we can only perform A*B if A is m-by-n and B is n-by-p, the inner dimensions match.
+However, if both expressions are vectors or matrices then their sizes must match in the usual matrix/vector multiplication sense. This means we can only perform A*B if A is m-by-n and B is n-by-p.
 
-	x = Variable(4)
+	x = Variable(4) # A 4-by-1 matrix
 	A = np.array([[1,2,3,4]]) # A 1-by-4 matrix
 	B = np.array([[1,2,3]]) # A 1-by-3 matrix
 	
 	B*x # Fails
 	A*x # Ok
+
+Finally, a few common operations have been created for affine to make formulating your problem simpler.
+
+	x = Variable(10)
+	
+	# A scalar affine expression who value is the sum of the entries of x
+	sum(x)
+	
+	# Indexing
+	x[0] # Indexing to get the first entry of x
+	x[0:4] # Index the first 3 entries of x
+	y = Variable(3,3)
+	y[2,1:3] # Get the 3rd row of y, and columns 2 and 3, remember python is zero-indexed
 
 ### Equality constraints
 
@@ -295,26 +308,23 @@ Similar to addition or subtraction, an equality constraint can only be created i
 	z = Variable() # A scalar variable
 	
 	x == y # Fails
+	x == y[0:3,:] # Ok, we dropped the last row from y making it 3-by-10
 	x == z # Ok
-	y == 0 # Ok
 
 ### Sum of squares expressions
-The objective of least-squares problems are sum of squares expressions, which are made by summing the square of each entry in one or more affine expressions. For example,
+Sum of squares expressions are created by summing the square of each entry in an affine expression. If you have an affine expression, a sum of sqaures expression can be created by calling the function sum_squares as shown below.
 
 	x = Variable(4)
-	sum_sq_expression = sum_sq(x)
+	sum_sq_expression = sum_squares(x)
 
-In this case, we sum the squares of the entries of x, which turns out to be the length of x squared!
+Sum of squares expressions can also be created by combining two other sum of squares expressions with +, or by multiplying a sum of squares expression by a non-negative scalar.
 
-You can form sum of squares expression by:
-* Calling sum_sq on an affine or variable
-* Multiplying another sum of squares expression by a positive scalar
-* Adding two sum of squares expressions together
-
-For example,
-
-	# 'A' is a constant matrix and x,y are variables.
-	sum_sq_expression = sum_sq(A*x-y) + 100*sum_sq(x)
+	y = Variable(18)
+	z = Variable(20)
+	
+	sum_squares(y) + sum_squares(z) # Ok
+	10*sum_squares(z) # Ok
+	-1*sum_squares(z) # Fails
 
 ### Solving
 
