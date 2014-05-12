@@ -280,7 +280,7 @@ However, if both expressions are vectors or matrices then their sizes must match
 	B*x # Fails
 	A*x # Ok
 
-Finally, a few common operations have been created for affine to make formulating your problem simpler.
+Finally, a few common operations have been created for affine expressions to make formulating your problem simpler.
 
 	x = Variable(10)
 	
@@ -301,7 +301,7 @@ The '==' operator creates equality constraints between two affine expressions.
 	y = Variable()
 	x == y + 2 # An equality constraint
 
-Similar to addition or subtraction, an equality constraint can only be created if two expressions have equal dimensions or if one expression is a scalar.
+Similar to addition or subtraction, an equality constraint can only be created if two expressions have equal dimensions or if one expression is a scalar. In the latter case, each entry of the matrix is set equal to the scalar.
 
 	x = Variable(3,10)
 	y = Variable(4,10)
@@ -322,7 +322,7 @@ Sum of squares expressions can also be created by combining two other sum of squ
 	y = Variable(18)
 	z = Variable(20)
 	
-	sum_squares(y) + sum_squares(z) # Ok
+	sum_squares(y) + sum_squares(z) # Ok, sum_squares is always a scalar so sizes of the affine don't matter
 	10*sum_squares(z) # Ok
 	-1*sum_squares(z) # Fails
 
