@@ -248,7 +248,7 @@ Variables are objects, not numeric quantities. Their value is set by calling eit
 
 Affine expressions are made from variables, constants, and other affine expressions using the operations +, -, and *. There are a few rules about what can be combined for each operator.
 
-For addition and subraction, the two expressions being combined must either have the same dimensions or one of the two must be a scalar. When one expression is a scalar, it is added to each entry of the other expression. For example,
+For addition and subtraction, the two expressions being combined must either have the same dimensions or one of the two must be a scalar. When one expression is a scalar, it is added to each entry of the other expression. For example,
 
 	x = Variable(3)
 	y = Variable(2)
@@ -312,7 +312,7 @@ Similar to addition or subtraction, an equality constraint can only be created i
 	x == z # Ok
 
 ### Sum of squares expressions
-Sum of squares expressions are created by summing the square of each entry in an affine expression. If you have an affine expression, a sum of sqaures expression can be created by calling the function sum_squares as shown below.
+Sum of squares expressions are created by summing the square of each entry in an affine expression. If you have an affine expression, a sum of squares expression can be created by calling the function sum_squares as shown below.
 
 	x = Variable(4)
 	sum_sq_expression = sum_squares(x)
@@ -328,12 +328,13 @@ Sum of squares expressions can also be created by combining two other sum of squ
 
 ### Solving
 
-	minimize(objective,[constraint])            # Solve the problem
-	print(x.value)                              # Display the results
+The 'minimize' function solves the least-squares problem you have created. It takes as arguments an objective that is a sum of squares expression, and an optional list of equality constraints to apply. In a simple case, this looks like
 
-The 'minimize' function is called when it is time to solve the least-squares problem you have created. It takes as arguments an objective that is a sum of squares expression, and an optional list of equality constraints to apply. The function will then attempt to solve. If a solution is found, the value of a variable can be obtained as the value property of a variable as shown.
-
-There are two cases where 'minimize' will be unable to solve the problem. The first is when the system is over-determined ... The system may also be under-determined in which case ...
+	x = Variable(10)
+	minimize(sum_squares(x),[sum(x) == 10]) # Solve the problem
+	print(x.value) # Display the results
+	
+If a solution is found, the values of the variables used in the problem can be obtained as the value attribute of the variables as shown above. Otherwise, the problem as formed is invalid and minimize will print an appropriate error message.
 
 ## The math
 
