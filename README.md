@@ -334,7 +334,13 @@ The 'minimize' function solves the least-squares problem you have created. It ta
 	minimize(sum_squares(x),[sum(x) == 10]) # Solve the problem
 	print(x.value) # Display the results
 	
-If a solution is found, the values of the variables used in the problem can be obtained as the value attribute of the variables as shown above. Otherwise, the problem as formed is invalid and minimize will print an appropriate error message.
+If a solution is found, the values of the variables used in the problem can be obtained as the value attribute of the variables as shown above. Otherwise, the problem as formed is invalid and minimize will print an appropriate error message. See the math for more information about when the least-squares problem cannot be solved.
+
+lsqpy also provides a 'solve' function to solve a system of linear equations. It takes as arguments either a list of equality constraints, or a single equality constraint.
+
+	x = Variable(3)
+	solve([sum(x) == 3, x[0] + x[2] == 2, x[0] + x[1] == 1])
+	print(x.value)
 
 ## The math
 
