@@ -9,3 +9,9 @@ def minimize(sq_term,constraint_arr = []):
 	p = Problem(sq_term,constraint_arr)
 	p.minimize()
 	print('Solved, value = ' + str(p.val))
+
+def solve(constraint_arr = []):
+	print('Begin solve')
+	p = Problem(None,constraint_arr)
+	p.solve()
+	print('Solved')

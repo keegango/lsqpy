@@ -25,7 +25,8 @@ class Problem:
 	"""
 	def collectVars(self,included_vars):
 		total_vars_and_nnz = [0,0,0]
-		for aff in self.sumsq_expr.sq_terms: aff.indexVariables(included_vars,total_vars_and_nnz)
+		if self.sumsq_expr:
+			for aff in self.sumsq_expr.sq_terms: aff.indexVariables(included_vars,total_vars_and_nnz)
 		for eq_const in self.eq_consts: n = eq_const.canonical.indexVariables(included_vars,total_vars_and_nnz)
 		return total_vars_and_nnz
 		
@@ -46,12 +47,11 @@ class Problem:
 			to be filled, it is updated inside the getLinear calls
 		"""
 		cur_row_and_entry = [0,0]
-		for aff in self.sumsq_expr.sq_terms:
-			aff.getLinear(value_data,row_data,col_data,cur_row_and_entry)
-		#print('done sq affines')
+		if(self.sumsq_expr):
+			for aff in self.sumsq_expr.sq_terms:
+				aff.getLinear(value_data,row_data,col_data,cur_row_and_entry)
 		for eq_const in self.eq_consts:
 			eq_const.canonical.getLinear(value_data,row_data,col_data,cur_row_and_entry)
-		#print('done eq affines')
 		shape = (total_constraints,total_vars_and_nnz[0])
 		return sparse.coo_matrix((value_data,(row_data,col_data)),shape)
 	
@@ -62,7 +62,8 @@ class Problem:
 		value_data = [0]*num_entries
 		row_data = [0]*num_entries
 		cur_row_and_entry = [0,0]
-		for aff in self.sumsq_expr.sq_terms: aff.getConst(value_data,row_data,cur_row_and_entry)
+		if self.sumsq_expr:
+			for aff in self.sumsq_expr.sq_terms: aff.getConst(value_data,row_data,cur_row_and_entry)
 		for eq_const in self.eq_consts: eq_const.canonical.getConst(value_data,row_data,cur_row_and_entry)
 		shape = (total_constraints,1)
 		return -sparse.coo_matrix((value_data,(row_data,[0]*num_entries)),shape)
@@ -93,10 +94,14 @@ class Problem:
 		self.val = solution[total_vars:total_vars+num_new_constraints].T.dot(solution[total_vars:total_vars+num_new_constraints])
 	
 	""" Solve this system of equations, only looks at equality constraints """
-	def solve():
+	def solve(self):
+		""" Form the system of equations from the constraints """
 		total_constraints = sum([eq_const.numConstraints() for eq_const in self.eq_consts])
 		constraint_mat = self.createConstraintMat(total_constraints,self.total_vars_and_nnz)
 		constraint_const = self.createConstMat(total_constraints,self.total_vars_and_nnz)
-		# Call solve
+		
+		""" Call solve """
+		solution = linalg.spsolve(constraint_mat.tocsc(),constraint_const)
+		
 		""" Extract solution """
 		for var in self.included_vars: var.extractValues(solution)
