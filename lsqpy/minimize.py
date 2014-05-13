@@ -7,5 +7,5 @@ from lsqpy.problem import *
 def minimize(sq_term,constraint_arr = []):
 	print('Begin minimization')
 	p = Problem(sq_term,constraint_arr)
-	p.solve()
+	p.minimize()
 	print('Solved, value = ' + str(p.val))

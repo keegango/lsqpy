@@ -9,7 +9,5 @@ class EqConstraint:
 		self.rhs = rhs
 		self.canonical = lhs-rhs
 
-	def indexVariables(self,included_vars,num_cols):
-		return self.canonical.indexVariables(included_vars,num_cols)
-	def getLinear(self,vars): return self.canonical.getLinear(vars)
-	def getConst(self): return self.canonical.getConst()
+	def numConstraints(self):
+		return self.canonical.rows * self.canonical.cols

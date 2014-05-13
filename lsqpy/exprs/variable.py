@@ -22,9 +22,7 @@ class Variable(Affine):
 
 	""" Return information about variable """
 	def getName(self): return self.name
-	def getColIndices(self,col):
-		start = self.index+self.rows*col
-		return list(range(start,start+self.rows))
+	def getColIndices(self,col): return self.index+self.rows*col
 	def setIndex(self,index):
 		self.index = index
 		return index + self.cols*self.rows
@@ -33,7 +31,8 @@ class Variable(Affine):
 		else:
 			self.value = sparse.csc_matrix((self.rows,self.cols)).todense()
 			for j in range(self.cols):
-				self.value[:,j:j+1] = solution[np.newaxis,self.getColIndices(j)].T
+				start_col = self.getColIndices(j)
+				self.value[:,j:j+1] = solution[np.newaxis,start_col:start_col+self.rows].T
 			self.value = np.array(self.value)
 
 	""" Re-override equality operator so that we can hash with it"""

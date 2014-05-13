@@ -12,7 +12,7 @@ class SumSqExpr:
 		self.affine_term = affine_term
 
 	""" Get the number of constraints needed to convert the sq_terms to standard form """
-	def num_constraints(self): return sum([aff.rows*aff.cols for aff in self.sq_terms])
+	def numConstraints(self): return sum([aff.rows*aff.cols for aff in self.sq_terms])
 		
 	""" Addition is collecting the square terms and adding the affine component """
 	def __add__(self,other):
@@ -22,7 +22,7 @@ class SumSqExpr:
 	""" Multiplication is scaling each square term by sqrt(other) and the affine by other """
 	def __mul__(self,other):
 		if other < 0:
-			print("Can only multiply a Norm Square Expression by a positive constant")
+			print("Can only multiply a sum_squares expression by a positive constant")
 			return None
 		new_sq_expr = SumSqExpr()
 		const = math.sqrt(other)
@@ -32,6 +32,9 @@ class SumSqExpr:
 	def __rmul__(self,other): return self.__mul__(other)
 
 def sum_squares(affine_term):
+	if not isinstance(affine_term,list):
+		if not isinstance(affine_term,Affine): print('Invalid argument to sum_squares')
+		else: affine_term = [affine_term]
 	new_sumsq_expr = SumSqExpr()
-	new_sumsq_expr.sq_terms = [affine_term]
+	new_sumsq_expr.sq_terms = affine_term
 	return new_sumsq_expr

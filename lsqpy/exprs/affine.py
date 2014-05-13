@@ -55,40 +55,60 @@ class Affine:
 
 	""" Return basic information about this affine expression """
 	def size(self): return (self.rows,self.cols)
+	def numElem(self): return self.rows*self.cols
 	def isScalar(self): return True if self.rows == 1 and self.cols == 1 else False
 	
 	""" Access to data for problem solving """
-	def indexVariables(self,included_vars,num_cols):
+	def indexVariables(self,included_vars,total_and_nnz):
 		"""
 			This method is called when problems are being initialized. It runs over all
 			variables in this affine, and sets their index attribute which is their position
-			into the KKT matrix. Returns the new value for num_cols, the number of cols
-			needed so far for the KKT matrix.
+			into the KKT matrix. Updates the counts for the total number of variables and the
+			number of non-zero entries in the constraint matrix
 		"""
+		# Store current counts locally, for readability
+		num_vars, var_nnz, const_nnz = total_and_nnz
 		for j in range(self.cols):
+			for key in self.vectors[j]:
+				# Update number of non-zero entries
+				if key == Affine.CONST: const_nnz += self.vectors[j][key].nnz
+				else: 
+					var_nnz += self.vectors[j][key].nnz
+					# Update set of variables
+					var,col = key
+					if not var in included_vars:
+						num_vars = var.setIndex(num_vars)
+						included_vars[var] = 0
+		# Update counts to pass back
+		total_and_nnz[0], total_and_nnz[1], total_and_nnz[2] = num_vars, var_nnz, const_nnz
+	def getLinear(self,value_data,row_data,col_data,cur_row_and_entry):
+		cur_row, cur_entry = cur_row_and_entry
+		for j in range(self.cols):
+			vector = self.vectors[j]
 			for key in self.vectors[j]:
 				if key == Affine.CONST: continue
 				var,col = key
-				if not var in included_vars:
-					num_cols = var.setIndex(num_cols)
-					included_vars[var] = 0
-		return num_cols
-	def getLinear(self,num_vars):
-		mat_list = []
+				""" Get offset of variable into table, then copy values """
+				var_index_offset = var.getColIndices(col)
+				coef_matrix = self.vectors[j][key].tocoo()
+				for i in range(coef_matrix.nnz):
+					value_data[cur_entry+i] = coef_matrix.data[i]
+					row_data[cur_entry+i] = cur_row + coef_matrix.row[i]
+					col_data[cur_entry+i] = var_index_offset + coef_matrix.col[i]
+				cur_entry += coef_matrix.nnz
+			cur_row += self.rows		
+		cur_row_and_entry[0],cur_row_and_entry[1] = cur_row, cur_entry
+	def getConst(self,value_data,row_data,cur_row_and_entry):
+		cur_row, cur_entry = cur_row_and_entry
 		for j in range(self.cols):
-			mat = mutils.zeros(self.rows,num_vars,sparse.lil_matrix)
-			for key in self.vectors[j]:
-				if key == Affine.CONST: continue
-				var,col = key
-				mat[:,var.getColIndices(col)] = self.vectors[j][key]
-			mat_list.append(mat)
-		return sparse.vstack(mat_list).tocsc()
-	def getConst(self):
-		mat_list = []
-		for j in range(self.cols):
-			if Affine.CONST in self.vectors[j]: mat_list.append(self.vectors[j][Affine.CONST])
-			else: mat_list.append(mutils.zeros(self.rows,1))
-		return sparse.vstack(mat_list).tocsc()
+			if Affine.CONST in self.vectors[j]:
+				coef_matrix = self.vectors[j][Affine.CONST].tocoo()
+				for i in range(coef_matrix.nnz):
+					value_data[cur_entry+i] = coef_matrix.data[i]
+					row_data[cur_entry+i] = cur_row + coef_matrix.row[i]
+				cur_entry += coef_matrix.nnz
+			cur_row += self.rows
+		cur_row_and_entry[0],cur_row_and_entry[1] = cur_row, cur_entry
 	
 	""" Functions to shape the affine expression """
 	def T(self): pass # TODO
