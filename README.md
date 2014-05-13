@@ -124,24 +124,21 @@ and also display the a plot of the line we found.
 
 #### Quadratic regression
 
-Visually, the line does not seem to be a good fit for the data. It consistently overestimates points near the middle of the plot, and underestimates points near the edges of the plot. Now instead of using a line, let's try to fit a quadratic function to the data.
+Now instead of using a line, let's try to fit a quadratic function to the data.
 
 Our new function will be something of the form
 
 	f(x) = offset + slope*x + quadratic*x^2
 
-which is similar to the linear function we used previously. The only difference is that we have introduced an x^2 term with a variable coefficient. Along with offset and slope, quadratic is a variable that we wish to determine.
+which is similar to the linear function we used previously. The only difference is that we have introduced an x^2 term with a new Variable coefficient. Along with offset and slope, quadratic is a Variable that we wish to determine.
 
-Here is the [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/simple_quadreg.py "quadreg code") that augments the data and solves the problem (again, plotting omitted)
+Here is the [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/simple_quadreg.py "quadreg code") that solves the problem (again, with plotting omitted)
 
 	# Import lsqpy
 	from lsqpy import Variable,sum_squares,minimize
 	
 	# Import the test data
 	from data import x_data,y_data
-	
-	# Import matplotlib and create the extra variables we need for plotting
-	import matplotlib.pyplot as plt
 	
 	# Create variables that holds the coefficients
 	quadratic = Variable()
@@ -163,8 +160,6 @@ will show the plot
 
 ![quad_results](https://github.com/keegango/lsqpy/raw/master/images/reg_quad.png "quadreg results")
 
-Here, the fit looks much better as the function follows the curve of the data.
-
 ### Control
 
 Another example of a least-squares problem is control, where we want to plan how something will move. In our example, we want to determine the forces that will move our object to a goal position.
@@ -176,7 +171,7 @@ There are 3 unknown quantities in the problem: the force applied, the velocity o
 	p[t+1] = p[t] + h*v[t]
 	v[t+1] = v[t] + h/mass*f[t] - drag*v[t]
 
-where p[t], v[t], and f[t] are the position, velocity, and force respectively at time t. This model is only an approximation of the real dynamics of moving objects, but when h is small enough the model becomes a reasonable approximation.
+where p[t], v[t], and f[t] are the position, velocity, and force respectively at time t. This model is only an approximation of the real dynamics of moving objects, but when h is small this model is reasonable accurate.
 
 Finally, we need to decide on an objective. Here we will use the combination
 
@@ -186,14 +181,11 @@ This objective tells us that we want to minimize both the forces we apply as wel
 
 #### Solution
 
-The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_control/simple_control.py "control code") is shown below (see the source for plotting).
+The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_control/simple_control.py "control code") is shown below.
 
 	# Import lsqpy
 	from lsqpy import Variable, sum_sq, minimize
-	
-	# Import plotting
-	import matplotlib.pyplot as plt
-	
+
 	# Import the way points
 	from data import initial_velocity, final_position, T, h, mass, drag
 	
@@ -225,71 +217,124 @@ The code roughly divides into three sections. We first create our variables: pos
 
 	python simple_control.py
 
-you should see a plot showing the trajectory of the object as well as the forces applied. For the code above the plot looks like
+you should see this plot
 
 ![control results](https://github.com/keegango/lsqpy/raw/master/images/control.png "control results")
 
-In the plot above, the black arrows show the force applied to the object, and the red line gives the actual position.
-At this point, you can play around with the value of mu to see how the weighting between force and velocity affects the motion of the object. You could even try include in the objective the sum of squares of the position as well. What will be the effect of that?
+The black arrows show the force applied to the object, and the red line gives the actual position.
+
+At this point, you can play around with the value of mu to see how the weighting between force and velocity affects the motion of the object. You could even try include in the objective the sum of squares of the position as well. What effect will this have?
 
 ## User guide
 
 ### Variables
 
+Variables represent the quantities that we want to find. lsqpy handles scalar, vector and matrix variables as shown below.
+
 	x = Variable() # A scalar variable
 	y = Variable(3) # Create a vector variable with 3 rows and 1 columns
 	z = Variable(10,4) # A matrix variable that has 10 rows and 4 columns
 
-Variables represent the quantities that we want to find. lsqpy handles scalar, vector and matrix variables making it simple to create the appropriate variables for any problem.
+Variables are objects, not numeric quantities. Their value is set by calling either minimize or solve. After these functions are called, the value of a variable can be obtained through its value attribute. For example,
+
+	x = Variable(10)
+	... # Add some constraints
+	minimize(x,constraints)
+	
+	# Print the numeric value of x that minimizes the above problem
+	print(x.value) 
 
 ### Affine expressions
 
-Affine expressions are built from certain combinations of variables, constants, and other affine expressions. These are:
-* Two variables - added or subtracted
-* A variable and a constant - added, subtracted or multiplied
-* Two affine expressions - added or subtracted
-* An affine expression and a constant - added, subtracted or multiplied
+Affine expressions are made from variables, constants, and other affine expressions using the operations +, -, and *. There are a few rules about what can be combined for each operator.
 
-Remember that all affine expressions, and variables as well, have dimensions and can only be combined with appropriately sized expressions.
+For addition and subtraction, the two expressions being combined must either have the same dimensions or one of the two must be a scalar. When one expression is a scalar, it is added to each entry of the other expression. For example,
+
+	x = Variable(3)
+	y = Variable(2)
+	z = Variable(3)
+	
+	x + z # Ok
+	x + y # Fails
+	z - x # Ok
+	
+	w = Variable() # A scalar variable
+	x + w # Ok
+	y + 1 # Ok
+
+On the other hand, multiplication will only work between an affine expression and a constant. If either expression is a scalar, the multiplication will work regardless of the size of the other expression.
+
+	x = Variable(3)
+	y = Variable()
+	
+	x*y # Fails, one must be a constant
+	5*x # Ok
+	y*np.array([[1,2,3]])
+
+However, if both expressions are vectors or matrices then their sizes must match in the usual matrix/vector multiplication sense. This means we can only perform A*B if A is m-by-n and B is n-by-p.
+
+	x = Variable(4) # A 4-by-1 matrix
+	A = np.array([[1,2,3,4]]) # A 1-by-4 matrix
+	B = np.array([[1,2,3]]) # A 1-by-3 matrix
+	
+	B*x # Fails
+	A*x # Ok
+
+Finally, a few common operations have been created for affine expressions to make formulating your problem simpler.
+
+	x = Variable(10)
+	
+	# A scalar affine expression who value is the sum of the entries of x
+	sum(x)
+	
+	# Indexing
+	x[0] # Indexing to get the first entry of x
+	x[0:4] # Index the first 3 entries of x
+	y = Variable(3,3)
+	y[2,1:3] # Get the 3rd row of y, and columns 2 and 3, remember python is zero-indexed
 
 ### Equality constraints
 
-Equality constraints limit what values our variables can take on. For instance, a control problem might want to specify the position of an object at some moment in time. This would look like
+The '==' operator creates equality constraints between two affine expressions.
 
-	x[:,a_time] == a_position
+	x = Variable()
+	y = Variable()
+	x == y + 2 # An equality constraint
 
-The '==' operator will create equality constraints in the following situations:
-* variable == constant
-* variable == affine
-* affine == constant
-* affine == affine
+Similar to addition or subtraction, an equality constraint can only be created if two expressions have equal dimensions or if one expression is a scalar. In the latter case, each entry of the matrix is set equal to the scalar.
+
+	x = Variable(3,10)
+	y = Variable(4,10)
+	z = Variable() # A scalar variable
+	
+	x == y # Fails
+	x == y[0:3,:] # Ok, we dropped the last row from y making it 3-by-10
+	x == z # Ok
 
 ### Sum of squares expressions
-The objective of least-squares problems are sum of squares expressions, which are made by summing the square of each entry in one or more affine expressions. For example,
+Sum of squares expressions are created by summing the square of each entry in an affine expression. If you have an affine expression, a sum of squares expression can be created by calling the function sum_squares as shown below.
 
 	x = Variable(4)
-	sum_sq_expression = sum_sq(x)
+	sum_sq_expression = sum_squares(x)
 
-In this case, we sum the squares of the entries of x, which turns out to be the length of x squared!
+Sum of squares expressions can also be created by combining two other sum of squares expressions with +, or by multiplying a sum of squares expression by a non-negative scalar.
 
-You can form sum of squares expression by:
-* Calling sum_sq on an affine or variable
-* Multiplying another sum of squares expression by a positive scalar
-* Adding two sum of squares expressions together
-
-For example,
-
-	# 'A' is a constant matrix and x,y are variables.
-	sum_sq_expression = sum_sq(A*x-y) + 100*sum_sq(x)
+	y = Variable(18)
+	z = Variable(20)
+	
+	sum_squares(y) + sum_squares(z) # Ok, sum_squares is always a scalar so sizes of the affine don't matter
+	10*sum_squares(z) # Ok
+	-1*sum_squares(z) # Fails
 
 ### Solving
 
-	minimize(objective,[constraint])            # Solve the problem
-	print(x.value)                              # Display the results
+The 'minimize' function solves the least-squares problem you have created. It takes as arguments an objective that is a sum of squares expression, and an optional list of equality constraints to apply. In a simple case, this looks like
 
-The 'minimize' function is called when it is time to solve the least-squares problem you have created. It takes as arguments an objective that is a sum of squares expression, and an optional list of equality constraints to apply. The function will then attempt to solve. If a solution is found, the value of a variable can be obtained as the value property of a variable as shown.
-
-There are two cases where 'minimize' will be unable to solve the problem. The first is when the system is over-determined ... The system may also be under-determined in which case ...
+	x = Variable(10)
+	minimize(sum_squares(x),[sum(x) == 10]) # Solve the problem
+	print(x.value) # Display the results
+	
+If a solution is found, the values of the variables used in the problem can be obtained as the value attribute of the variables as shown above. Otherwise, the problem as formed is invalid and minimize will print an appropriate error message.
 
 ## The math
 
