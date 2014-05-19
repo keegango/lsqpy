@@ -344,4 +344,23 @@ lsqpy also provides a 'solve' function to solve a system of linear equations. It
 
 ## The math
 
-TODO
+To solve your least-squares problems, lsqpy first converts them to a standard form that looks like
+
+	minimize sum_squares(A*x+b)
+	subject to C*x == d
+	
+A and C are matrices formed by stacking together all the equations in the objective and equality constraints respectively. Similarly, b and d are vectors that contain the constant terms in the objective and equality constraints.
+
+In this form, the least-squares problem by solving the following system of equations:
+
+	[ 2*A'*A  C' ] [ x ] = [ -2*A*b ]
+	[   C     0  ] [ z ]   [    d   ]
+
+This result is derived from the KKT conditions. (what else?)
+
+Since we are solving a system of linear equations, we can state the precise conditions where lsqpy will solve a problem. It requires that the block matrix
+
+	[ 2*A'*A ]
+	[    C   ]
+
+has independent columns and that the rows are C are also independent.
