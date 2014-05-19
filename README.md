@@ -95,7 +95,7 @@ The values we want for slope and offset will be the ones that minimize total_res
 We can now use lsqpy to solve this problem. The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_linreg/simple_linreg.py "linreg code") for this example is shown below (with the plotting omitted):
 
 	# Import lsqpy
-	from lsqpy import Variable,sum_sq,minimize
+	from lsqpy import Variable,sum_squares,minimize
 	
 	# Import the test data
 	from data import x_data,y_data
@@ -184,7 +184,7 @@ This objective tells us that we want to minimize both the forces we apply as wel
 The [code](https://github.com/keegango/lsqpy/blob/master/examples/simple_control/simple_control.py "control code") is shown below.
 
 	# Import lsqpy
-	from lsqpy import Variable, sum_sq, minimize
+	from lsqpy import Variable, sum_squares, minimize
 
 	# Import the way points
 	from data import initial_velocity, final_position, T, h, mass, drag
