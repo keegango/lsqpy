@@ -93,6 +93,33 @@ class Problem:
 		for var in self.included_vars: var.extractValues(solution)
 		self.val = solution[total_vars:total_vars+num_new_constraints].T.dot(solution[total_vars:total_vars+num_new_constraints])
 	
+	def minimizeLSMR(self):
+		""" Gather some statistics """
+		total_vars = self.total_vars_and_nnz[0]
+		num_new_constraints = self.sumsq_expr.numConstraints()
+		total_constraints = (num_new_constraints + sum([eq_const.numConstraints() for eq_const in self.eq_consts]))
+
+		""" Create constraint matrices including those implicit constraints """
+		constraint_mat = self.createConstraintMat(total_constraints,self.total_vars_and_nnz)
+		""" Append a -identity matrix for the dual variables """
+		constraint_mat = sparse.hstack(
+			[constraint_mat,-1*sparse.eye(constraint_mat.shape[0],num_new_constraints)]).tocsc()
+
+		constraint_const = self.createConstMat(total_constraints,self.total_vars_and_nnz)
+
+		""" Form the KKT system and solve it """
+		total_constraints = constraint_const.shape[0]
+		KKT_mat = mutils.cat([[mutils.gradMat(total_vars,num_new_constraints),constraint_mat.T],
+                              [constraint_mat,mutils.zeros(total_constraints,total_constraints)]])
+		KKT_const = sparse.vstack([mutils.zeros(total_vars+num_new_constraints,1),constraint_const])
+		KKT_const = np.array(KKT_const.todense())
+		KKT_const = np.squeeze(KKT_const)
+		solution = linalg.lsmr(KKT_mat.tocsc(),KKT_const)[0]
+		
+		""" Write results back to the correct variables """
+		for var in self.included_vars: var.extractValues(solution)
+		self.val = solution[total_vars:total_vars+num_new_constraints].T.dot(solution[total_vars:total_vars+num_new_constraints])
+	
 	""" Solve this system of equations, only looks at equality constraints """
 	def solve(self):
 		""" Form the system of equations from the constraints """

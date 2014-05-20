@@ -9,7 +9,7 @@ import numpy as np
 from scipy import sparse
 
 """ Define function for checking if an object's type """
-CONSTTYPES = (int,float,np.ndarray)
+CONSTTYPES = (int,float,np.ndarray,sparse.coo.coo_matrix)
 SCALARTYPES = (int,float)
 def isValidConst(obj): return True if isinstance(obj,CONSTTYPES) else False
 def isScalar(obj): return True if isinstance(obj,SCALARTYPES) else False

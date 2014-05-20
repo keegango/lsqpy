@@ -32,7 +32,7 @@ class Variable(Affine):
 			self.value = sparse.csc_matrix((self.rows,self.cols)).todense()
 			for j in range(self.cols):
 				start_col = self.getColIndices(j)
-				self.value[:,j:j+1] = solution[np.newaxis,start_col:start_col+self.rows].T
+				self.value[:,j:j+1] = solution[np.newaxis,start_col:(start_col+self.rows)].T
 			self.value = np.array(self.value)
 
 	""" Re-override equality operator so that we can hash with it"""
