@@ -13,6 +13,7 @@ print('done loading y coordiantes')
 line_mat_val = np.genfromtxt('tux_sparse_val.txt')
 print('done loading matrix values')
 line_vals = np.genfromtxt('tux_sparse_lines.txt')
+line_vals = line_vals[:,np.newaxis]
 print('done loading line values')
 
 # Form the sparse matrix from the data
