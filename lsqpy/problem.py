@@ -114,7 +114,7 @@ class Problem:
 		KKT_const = sparse.vstack([mutils.zeros(total_vars+num_new_constraints,1),constraint_const])
 		KKT_const = np.array(KKT_const.todense())
 		KKT_const = np.squeeze(KKT_const)
-		solution = linalg.lsmr(KKT_mat.tocsc(),KKT_const)[0]
+		solution,exit_condition = linalg.lsmr(KKT_mat.tocsc(),KKT_const)[0:2]
 		
 		""" Write results back to the correct variables """
 		for var in self.included_vars: var.extractValues(solution)

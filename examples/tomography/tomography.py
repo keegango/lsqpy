@@ -10,22 +10,8 @@ x = Variable(num_pixels)
 
 objective = sum_squares(x.__rmul__(line_mat) - line_vals)
 
-"""
-import cProfile, pstats, io
-pr = cProfile.Profile()
-pr.enable()	
-"""
+minimize(objective,method='iterative')
 
-minimize(objective,solver_type='iterative')
-
-"""
-pr.disable()
-s = io.StringIO()
-sortby = 'cumulative'
-ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-ps.print_stats()
-print(s.getvalue())
-"""
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 plt.figure(0)
