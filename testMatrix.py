@@ -1,4 +1,4 @@
-
+	
 from lsqpy import Matrix
 
 a = Matrix([[1,2,3]])
@@ -87,8 +87,23 @@ print('c[0,0] = 13')
 c[:,3] = d
 print(c)
 print('-------------------------------------')
+print('OTHER MAT OPERATIONS FUNCS')
+print('-------------------------------------')
+print('a.power(3)')
+print(a.power(3))
+print('-------------------------------------')
 print('OTHER MAT CREATION FUNCS')
 print('-------------------------------------')
 print('Matrix.zeros(2,4)')
 z = Matrix.zeros(2,4)
 print(z)
+print('------------')
+print('Matrix.eye(4,2)')
+z = Matrix.eye(4,2)
+print(z)
+print('------------')
+print('Matrix.hcat([a,b])')
+print(Matrix.hcat([a,b]))
+print('------------')
+print('Matrix.vcat([a,b])')
+print(Matrix.vcat([a,b]))

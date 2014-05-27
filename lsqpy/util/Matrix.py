@@ -96,6 +96,13 @@ class Matrix:
 		modified_indices = iutils.formatIndices(indices)
 		if isinstance(value,SCALARTYPES): self.data.__setitem__(modified_indices,value)
 		else: self.data.__setitem__(modified_indices,value.data)
+	
+	"""
+	Other useful elementwise operations
+	"""
+	def power(self,n):
+		""" Raise each element of self to the nth power """
+		return Matrix(np.power(self.data,n),self.mat_type)
 
 	"""
 	Transpose
@@ -119,3 +126,15 @@ class Matrix:
 		if mat_type == 'full': return Matrix(np.zeros(new_shape),mat_type)
 		elif mat_type == 'sparse': return Matrix(sparse.coo_matrix(new_shape),mat_type)
 		else: raise RuntimeError('Matrix type must either be full or sparse')
+
+	def eye(rows,cols,mat_type='full'):
+		if mat_type == 'full': return Matrix(np.eye(rows,cols),mat_type)
+		elif mat_type == 'sparse':
+			raise NotImplementedError
+		else: raise RuntimeError('Matrix type must either be full or sparse')
+		
+	"""
+	Stacking operations
+	"""
+	def hcat(matrix_list): return Matrix(np.hstack([mat.data for mat in matrix_list]),'full')
+	def vcat(matrix_list): return Matrix(np.vstack([mat.data for mat in matrix_list]),'full')
