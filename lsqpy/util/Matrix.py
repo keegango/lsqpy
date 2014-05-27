@@ -18,7 +18,8 @@ MATRIXTYPES = (np.ndarray,sparse.coo_matrix)
 class Matrix:
 	def __init__(self,data,type='full',shape=None):
 		# First check that data is at least some kind of list or tuple
-		if not isinstance(data,(list,tuple)): raise RuntimeError('Data for Matrix must be a list or tuple')
+		if not isinstance(data,(list,tuple)) and not isinstance(data,MATRIXTYPES):
+			raise RuntimeError('Data for Matrix must be a list or tuple')
 		
 		# Do a direct set if we are given a type in MATRIXTYPES
 		if isinstance(data,MATRIXTYPES):
@@ -69,7 +70,10 @@ class Matrix:
 	def __rmul__(self,other):
 		if isinstance(other,SCALARTYPES): return Matrix(self.data*other,self.type)
 		raise NotImplementedError
-	def __rdiv__(self,other):
+	def __div__(self,other):
+		if isinstance(other,SCALARTYPES): return Matrix(self.data/other,self.type)
+		raise NotImplementedError
+	def __truediv__(self,other):
 		if isinstance(other,SCALARTYPES): return Matrix(self.data/other,self.type)
 		raise NotImplementedError
 	
@@ -81,8 +85,6 @@ class Matrix:
 	"""
 	Use index values to slice matrix
 	"""
-	def __getitem__(self,a,b):
-		print(a)
-		print(b)
+	def __getitem__(self,a): return Matrix(self.data.__getitem__(a))
 	@property
 	def T(self): return Matrix(self.data.T,self.type)
