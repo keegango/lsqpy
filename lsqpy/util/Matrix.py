@@ -21,7 +21,7 @@ class Matrix:
 		if not isinstance(data,(list,tuple)): raise RuntimeError('Data for Matrix must be a list or tuple')
 		
 		# Do a direct set if we are given a type in MATRIXTYPES
-		if isinstace(data,MATRIXTYPES):
+		if isinstance(data,MATRIXTYPES):
 			self.data = data
 		elif type == 'full':
 			# Check formatting, expects with a list of scalars or a lists of lists
@@ -72,3 +72,17 @@ class Matrix:
 	def __rdiv__(self,other):
 		if isinstance(other,SCALARTYPES): return Matrix(self.data/other,self.type)
 		raise NotImplementedError
+	
+	"""
+	Define __str__ for printing
+	"""
+	def __str__(self): return self.data.__str__()
+	
+	"""
+	Use index values to slice matrix
+	"""
+	def __getitem__(self,a,b):
+		print(a)
+		print(b)
+	@property
+	def T(self): return Matrix(self.data.T,self.type)

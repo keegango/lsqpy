@@ -7,3 +7,4 @@ from lsqpy.exprs.variable import Variable
 from lsqpy.exprs.sum_squares import sum_squares
 from lsqpy.minimize import minimize
 from lsqpy.minimize import solve
+from lsqpy.util.Matrix import Matrix
