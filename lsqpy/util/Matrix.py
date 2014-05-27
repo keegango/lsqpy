@@ -89,5 +89,17 @@ class Matrix:
 	def __getitem__(self,a):
 		modified_indices = iutils.formatIndices(a)
 		return Matrix(self.data.__getitem__(modified_indices))
+
+	"""
+	Transpose
+	"""
 	@property
 	def T(self): return Matrix(self.data.T,self.type)
+	
+	"""
+	Reshape
+	"""
+	def reshape(self,new_rows,new_cols):
+		if new_rows*new_cols != self.shape[0]*self.shape[1]:
+			raise RuntimeError('reshape requires that the total number of elements to remains constant')
+		return Matrix(self.data.reshape(new_rows,new_cols))
