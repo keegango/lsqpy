@@ -9,6 +9,7 @@ one for the row indices, one for the col indices, and one for the values
 
 import numpy as np
 from scipy import sparse
+import lsqpy.util.indexutils as iutils
 
 # Define the types of scalars so we can automatically detect dimensionality of matrix
 SCALARTYPES = (int,float)
@@ -85,6 +86,8 @@ class Matrix:
 	"""
 	Use index values to slice matrix
 	"""
-	def __getitem__(self,a): return Matrix(self.data.__getitem__(a))
+	def __getitem__(self,a):
+		modified_indices = iutils.formatIndices(a)
+		return Matrix(self.data.__getitem__(modified_indices))
 	@property
 	def T(self): return Matrix(self.data.T,self.type)
