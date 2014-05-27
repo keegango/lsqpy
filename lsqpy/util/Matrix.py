@@ -86,9 +86,16 @@ class Matrix:
 	"""
 	Use index values to slice matrix
 	"""
-	def __getitem__(self,a):
-		modified_indices = iutils.formatIndices(a)
+	def __getitem__(self,indices):
+		modified_indices = iutils.formatIndices(indices)
 		return Matrix(self.data.__getitem__(modified_indices))
+	def __setitem__(self,indices,value):
+		print('set item called')
+		if not isinstance(value,SCALARTYPES) and not isinstance(value,(Matrix)):
+			raise RuntimeError('Matrix can only be set with a scalar or a Matrix')
+		modified_indices = iutils.formatIndices(indices)
+		if isinstance(value,SCALARTYPES): self.data.__setitem__(modified_indices,value)
+		else: self.data.__setitem__(modified_indices,value.data)
 
 	"""
 	Transpose
