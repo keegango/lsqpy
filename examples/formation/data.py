@@ -54,23 +54,25 @@ objective = sum_squares(forces[0])
 for i in range(1,n): objective += sum_squares(forces[i])
 minimize(objective,constraints)
 
+# Plot paths
+fig = plt.figure(0)
+ax = fig.add_subplot(111, autoscale_on=False, xlim=(-25, 25), ylim=(-25, 25))
+
 line, = ax.plot([], [], 'o-', lw=2)
 time_template = 'time = %.1fs'
 time_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
 
 def init():
 	line.set_data([], [])
-    time_text.set_text('')
-    return line, time_text
+	time_text.set_text('')
+	return line, time_text
 	
 def animate(i):
-	thisx = 
+	thisx = [positions[ship].value[0,i] for ship in range(n)]
+	thisy = [positions[ship].value[1,i] for ship in range(n)]
+	line.set_data(thisx, thisy)
+	time_text.set_text(time_template%(i*h))
+	return line, time_text
 
-# Plot paths
-fig = plt.figure(0)
-ax = fig.add_subplot(111, autoscale_on=False, xlim=(-25, 25), ylim=(-25, 25))
-
-line, = ax.plot([],[], 'o')
-for i in range(n): plt.plot(positions[i].value[0,:],positions[i].value[1,:],'ro')
-plt.xlim([-25,25]), plt.ylim([-25,25])
+ani = animation.FuncAnimation(fig, animate, np.arange(1, T), interval=25, blit=True, init_func=init)
 plt.show()
