@@ -4,12 +4,15 @@ from lsqpy import Matrix
 a = Matrix([[1,2,3]])
 b = Matrix([[6,5,4]])
 c = Matrix([[1,2,3,4],[5,6,7,8,],[9,10,11,12]])
+d = Matrix([10,12,13])
 print('a = ')
 print(a)
 print('b = ')
 print(b)
 print('c = ')
 print(c)
+print('d = ')
+print(d)
 
 # Run some tests
 print('-------------------------------------')
