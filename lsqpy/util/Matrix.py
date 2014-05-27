@@ -17,7 +17,7 @@ SCALARTYPES = (int,float)
 MATRIXTYPES = (np.ndarray,sparse.coo_matrix)
 
 class Matrix:
-	def __init__(self,data,type='full',shape=None):
+	def __init__(self,data,mat_type='full',shape=None):
 		# First check that data is at least some kind of list or tuple
 		if not isinstance(data,(list,tuple)) and not isinstance(data,MATRIXTYPES):
 			raise RuntimeError('Data for Matrix must be a list or tuple')
@@ -25,7 +25,7 @@ class Matrix:
 		# Do a direct set if we are given a type in MATRIXTYPES
 		if isinstance(data,MATRIXTYPES):
 			self.data = data
-		elif type == 'full':
+		elif mat_type == 'full':
 			# Check formatting, expects with a list of scalars or a lists of lists
 			if len(data) == 0: raise RuntimeError('Cannot form Matrix without data')
 			# Check for 1-D case, this because a n x 1 vector
@@ -33,13 +33,13 @@ class Matrix:
 			else:
 				self.data = np.array(data)
 				if len(self.data.shape) > 2: raise RuntimeError('Data for Matrix must only be 2d')
-		elif(type == 'sparse'):
+		elif(mat_type == 'sparse'):
 			if not shape: raise RuntimeError('A sparse Matrix must be given a shape in the form (rows,cols)')
 			if len(data) != 3: raise RuntimeError('A sparse Matrix expects a list containing 3 lists for data')
 			self.data = sparse.coo_matrix((data[2],(data[0],data[1])),shape=shape)
 		else: raise RuntimeError('Matrix type must either be full or sparse')
 		self.shape = self.data.shape
-		self.type = type
+		self.mat_type = mat_type
 	
 	"""
 	Here we define the list of operators supposed by Matrix. There are only a few case that need to be
@@ -49,33 +49,33 @@ class Matrix:
 		Matrix [+,-,*] Affine or Affine [+,-,*] Matrix
 	The last case is handled by Affine and so we just need to ensure no result is returned.
 	"""
-	def __neg__(self): return Matrix(-1*self.data,self.type)
+	def __neg__(self): return Matrix(-1*self.data,self.mat_type)
 	def __add__(self,other):
-		if isinstance(other,SCALARTYPES): return Matrix(self.data+other,self.type)
-		if isinstance(other,Matrix): return Matrix(self.data+other.data,self.type)
+		if isinstance(other,SCALARTYPES): return Matrix(self.data+other,self.mat_type)
+		if isinstance(other,Matrix): return Matrix(self.data+other.data,self.mat_type)
 		raise NotImplementedError
 	def __radd__(self,other):
-		if isinstance(other,SCALARTYPES): return Matrix(self.data+other,self.type)
+		if isinstance(other,SCALARTYPES): return Matrix(self.data+other,self.mat_type)
 		raise NotImplementedError
 	def __sub__(self,other):
-		if isinstance(other,SCALARTYPES): return Matrix(self.data-other,self.type)
-		if isinstance(other,Matrix): return Matrix(self.data-other.data,self.type)
+		if isinstance(other,SCALARTYPES): return Matrix(self.data-other,self.mat_type)
+		if isinstance(other,Matrix): return Matrix(self.data-other.data,self.mat_type)
 		raise NotImplementedError
 	def __rsub__(self,other):
-		if isinstance(other,SCALARTYPES): return Matrix(other-self.data,self.type)
+		if isinstance(other,SCALARTYPES): return Matrix(other-self.data,self.mat_type)
 		raise NotImplementedError
 	def __mul__(self,other):
-		if isinstance(other,SCALARTYPES): return Matrix(self.data*other,self.type)
-		if isinstance(other,Matrix): return Matrix(self.data.dot(other.data),self.type)
+		if isinstance(other,SCALARTYPES): return Matrix(self.data*other,self.mat_type)
+		if isinstance(other,Matrix): return Matrix(self.data.dot(other.data),self.mat_type)
 		raise NotImplementedError
 	def __rmul__(self,other):
-		if isinstance(other,SCALARTYPES): return Matrix(self.data*other,self.type)
+		if isinstance(other,SCALARTYPES): return Matrix(self.data*other,self.mat_type)
 		raise NotImplementedError
 	def __div__(self,other):
-		if isinstance(other,SCALARTYPES): return Matrix(self.data/other,self.type)
+		if isinstance(other,SCALARTYPES): return Matrix(self.data/other,self.mat_type)
 		raise NotImplementedError
 	def __truediv__(self,other):
-		if isinstance(other,SCALARTYPES): return Matrix(self.data/other,self.type)
+		if isinstance(other,SCALARTYPES): return Matrix(self.data/other,self.mat_type)
 		raise NotImplementedError
 	
 	"""
@@ -101,7 +101,7 @@ class Matrix:
 	Transpose
 	"""
 	@property
-	def T(self): return Matrix(self.data.T,self.type)
+	def T(self): return Matrix(self.data.T,self.mat_type)
 	
 	"""
 	Reshape
@@ -110,3 +110,12 @@ class Matrix:
 		if new_rows*new_cols != self.shape[0]*self.shape[1]:
 			raise RuntimeError('reshape requires that the total number of elements to remains constant')
 		return Matrix(self.data.reshape(new_rows,new_cols))
+	
+	"""
+	Define a number of class methods that create common matricies
+	"""
+	def zeros(rows,cols,mat_type='full'):
+		new_shape = (rows,cols)
+		if mat_type == 'full': return Matrix(np.zeros(new_shape),mat_type)
+		elif mat_type == 'sparse': return Matrix(sparse.coo_matrix(new_shape),mat_type)
+		else: raise RuntimeError('Matrix type must either be full or sparse')
