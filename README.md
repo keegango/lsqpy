@@ -21,17 +21,17 @@ lsqpy relies on several other programs/packages.
 
 #### Python
 
-[Python](https://www.python.org/downloads/,"Python download") is a widely used scripting language. Make sure you are using Python version 3 rather than 2.
+[Python](https://www.python.org/downloads/ "Python download") is a widely used scripting language. Make sure you are using Python version 3 rather than 2.
 
 #### SciPy and NumPy
 
-[SciPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") and [NumPy](http://www.scipy.org/scipylib/download.html,"SciPy and Numpy Downloads") are two Python libraries that provide support for many numeric tasks including formatting and computing matrix quantities. lsqpy makes use of these libraries to represent and manipulate vectors and matrices. Note you will need to make sure that you download the versions of SciPy and NumPy that match your version of python. You can check your version of Python by calling 'python -v' from your command-line.
+[SciPy](http://www.scipy.org/scipylib/download.html "SciPy and Numpy Downloads") and [NumPy](http://www.scipy.org/scipylib/download.html "SciPy and Numpy Downloads") are two Python libraries that provide support for many numeric tasks including formatting and computing matrix quantities. lsqpy makes use of these libraries to represent and manipulate vectors and matrices. Note you will need to make sure that you download the versions of SciPy and NumPy that match your version of python. You can check your version of Python by calling 'python -v' from your command-line.
 
-Note: if you are running Windows (especially 64-bit) this [site](http://www.lfd.uci.edu/~gohlke/pythonlibs/,"Numpy for Windows") will have the packages you need.
+Note: if you are running Windows (especially 64-bit) this [site](http://www.lfd.uci.edu/~gohlke/pythonlibs/ "Numpy for Windows") will have the packages you need.
 
 #### setuptools
 
-[setuptools](https://pypi.python.org/pypi/setuptools,"setuptools") is a useful utility for installing Python modules. If you want to install lsqpy from source you will need this.
+[setuptools](https://pypi.python.org/pypi/setuptools "setuptools") is a useful utility for installing Python modules. If you want to install lsqpy from source you will need this.
 
 #### lsqpy
 
