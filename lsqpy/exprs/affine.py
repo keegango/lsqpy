@@ -55,7 +55,9 @@ class Affine:
 
 	""" Return basic information about this affine expression """
 	def size(self): return (self.rows,self.cols)
+
 	def numElem(self): return self.rows*self.cols
+
 	def isScalar(self): return True if self.rows == 1 and self.cols == 1 else False
 	
 	""" Access to data for problem solving """
@@ -81,6 +83,7 @@ class Affine:
 						included_vars[var] = 0
 		# Update counts to pass back
 		total_and_nnz[0], total_and_nnz[1], total_and_nnz[2] = num_vars, var_nnz, const_nnz
+
 	def getLinear(self,value_data,row_data,col_data,cur_row_and_entry):
 		cur_row, cur_entry = cur_row_and_entry
 		for j in range(self.cols):
@@ -98,6 +101,7 @@ class Affine:
 				cur_entry += coef_matrix.nnz
 			cur_row += self.rows		
 		cur_row_and_entry[0],cur_row_and_entry[1] = cur_row, cur_entry
+
 	def getConst(self,value_data,row_data,cur_row_and_entry):
 		cur_row, cur_entry = cur_row_and_entry
 		for j in range(self.cols):
@@ -111,8 +115,45 @@ class Affine:
 		cur_row_and_entry[0],cur_row_and_entry[1] = cur_row, cur_entry
 	
 	""" Functions to shape the affine expression """
-	def T(self): pass # TODO
-	def reshape(self,new_rows,new_cols): pass # TODO
+	
+	def T(self):
+		"""
+			Returns this affine transposed, probably runs slowly because of
+			the need to copy entries and index. Avoid using if possible.
+		"""
+		new_affine = Affine(self.cols,self.rows)
+		for j in range(self.cols):
+			for key in self.vectors[j]:
+				"""
+					The rows of the matrix self.vectors[j][key] (representing
+					one vector of the affine) are split across the columns of the
+					new_affine.
+				"""
+				for i in range(self.rows):
+					if not key in new_affine.vectors[i]:
+						var = key[0]
+						""" If not created already, add in a new matrix to fill """
+						new_affine.vectors[i][key] = sparse.csc_matrix((self.cols,var.rows))
+					new_affine.vectors[i][key][j,:] = self.vectors[j][key][i,:]
+		return new_affine
+
+	def reshape(self,new_rows,new_cols):
+		if new_rows * new_cols != self.rows*self.cols:
+			print("Number of elements does not match in reshape")
+			return None
+		new_affine = Affine(new_rows,new_cols)
+		for j in range(self.cols):
+			for key in self.vectors[j]:
+				""" Copy rows to new affine mapping based on new size """
+				for i in range(self.rows):
+					elem_num = i*self.rows + j
+					new_row_index, new_col_index = elem_num//new_rows, elem_num%new_cols
+					if not key in new_affine.vectors[i]:
+						var = key[0]
+						new_affine.vectors[new_col_index][key] = sparse.csc_matrix((new_rows,var.rows))
+					new_affine.vectors[new_col_index][key][new_row_index,:] = self.vectors[j][key][i,:]
+		return new_affine
+	
 	def broadcast(self,new_rows,new_cols):
 		if not self.isScalar():
 			print("Cannot broadcast a matrix")
@@ -122,6 +163,7 @@ class Affine:
 			new_mat = sparse.vstack([self.vectors[0][key] for _ in range(new_rows)])
 			for j in range(new_cols): new_affine.vectors[j][key] = new_mat
 		return new_affine
+
 	""" For slicing """
 	def __getitem__(self,indices):
 		if self.cols == 1 and self.rows == 1: raise IndexError("Cannot index a scalar expression")
@@ -147,6 +189,7 @@ class Affine:
 		for j in range(self.cols):
 			for key in self.vectors[j]: new_affine.vectors[j][key] = val * self.vectors[j][key]
 		return new_affine
+
 	def lMulMat(self,mat):
 		""" Perform mat*self """
 		mat_shape = mutils.getShape(mat)
@@ -159,9 +202,25 @@ class Affine:
 		for j in range(self.cols):
 			for key in self.vectors[j]: new_affine.vectors[j][key] = mat.dot(self.vectors[j][key])
 		return new_affine
+
 	def rMulMat(self,mat):
-		""" Perform self*mat """
-		pass # TODO
+		"""
+			Perform self*mat. This is done by individually evaluating each column
+			of the new matrix as a weighted sum of the columns of self. This is
+			not efficient and so it is recommended to avoid this if possible.
+		"""
+		mat_shape = mutils.getShape(mat)
+		if not mat_shape[0] == self.cols:
+			print('Warning: matrix multiplication failed due to size mismatch')
+			print(str(self.size()) + ' * ' + str(mat_shape))
+			return None
+		new_affine = Affine(self.rows,mat_shape[1])
+		for j in range(mat_shape[1]):
+			new_affine_col = sum([mat[i,j]*self[:,i] for i in range(self.cols)])
+			""" new_affine_col is always a vector of length self.rows """
+			for key in new_affine_col[0]:
+				new_affine[j][key] = new_affine_col[0][key]
+		return new_affine
 
 	""" Overload the rest of the operators """
 	def __eq__(self,other): return EqConstraint(self,other)
