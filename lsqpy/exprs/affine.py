@@ -1,4 +1,7 @@
 """
+The Affine class represents an affine expression. This file
+defines all the relevant operators as well as some associated
+helper methods for creating affine expressions.
 """
 
 import lsqpy.util.matutils as mutils
@@ -8,38 +11,48 @@ from lsqpy.constraint.eq_constraint import EqConstraint
 import numpy as np
 from scipy import sparse
 
-""" Define function for checking if an object's type """
+""" Define functions for checking an object's type """
 CONSTTYPES = (int,float,np.ndarray,sparse.coo.coo_matrix)
 SCALARTYPES = (int,float)
 def isValidConst(obj): return True if isinstance(obj,CONSTTYPES) else False
 def isScalar(obj): return True if isinstance(obj,SCALARTYPES) else False
 
+""" Converts any type of constant into the appropriate affine expression """
 def constToAffine(obj,rows,cols):
 	if isScalar(obj):
 		new_affine = Affine(rows,cols)
-		for j in range(cols): new_affine.vectors[j][Affine.CONST] = obj*sparse.csc_matrix(np.ones((rows,1)))
+		for j in range(cols):
+			new_affine.vectors[j][Affine.CONST] = obj*sparse.csc_matrix(np.ones((rows,1)))
 	else:
 		shape = mutils.getShape(obj)
 		new_affine = Affine(shape[0],shape[1])
-		for j in range(cols): new_affine.vectors[j][Affine.CONST] = sparse.csc_matrix(obj[:,j:j+1])
+		for j in range(cols):
+			new_affine.vectors[j][Affine.CONST] = sparse.csc_matrix(obj[:,j:j+1])
 	return new_affine
 
 class Affine:
 	"""
-		Represents a sent of affine expressions. We have one dictionary per column.
-		The dictionary's keys are variables and the values are matrices.
+		Represents a scalar, vector, or matrix affine expression.
+		
+		We have one dictionary per column. Since variables, a subclass of
+		affine, are also divided into columns this gives us the ability to
+		fully map any affine expression.
+		
+		The dictionary's keys are tuples giving the variable and column index.
+		The values are the coefficient matrix for the column in question.
 	"""
 	
 	""" Change array priority so that we can overload operators correctly """
 	__array_priority__ = 100
 	
-	""" Key for constant """
+	""" Key for constant in column dictionaries"""
 	CONST = 1
 
 	def __init__(self,rows,cols):
 		self.rows,self.cols = rows,cols
 		self.vectors = [{} for _ in range(self.cols)]
 	
+	# TODO: put in a nice print
 	def printme(self):
 		print('***************************')
 		for j in range(self.cols):
@@ -55,35 +68,37 @@ class Affine:
 
 	""" Return basic information about this affine expression """
 	def size(self): return (self.rows,self.cols)
-
 	def numElem(self): return self.rows*self.cols
-
 	def isScalar(self): return True if self.rows == 1 and self.cols == 1 else False
 	
-	""" Access to data for problem solving """
 	def indexVariables(self,included_vars,total_and_nnz):
 		"""
 			This method is called when problems are being initialized. It runs over all
 			variables in this affine, and sets their index attribute which is their position
 			into the KKT matrix. Updates the counts for the total number of variables and the
-			number of non-zero entries in the constraint matrix
+			number of non-zero entries in the constraint matrix.
+			
+			This operation adds complexity but greatly increases performance
+			because it allows us to preallocate the arrays.
 		"""
-		# Store current counts locally, for readability
+		
+		""" Store current counts locally, for readability """
 		num_vars, var_nnz, const_nnz = total_and_nnz
 		for j in range(self.cols):
 			for key in self.vectors[j]:
-				# Update number of non-zero entries
+				""" Update number of non-zero entries """
 				if key == Affine.CONST: const_nnz += self.vectors[j][key].nnz
 				else: 
 					var_nnz += self.vectors[j][key].nnz
-					# Update set of variables
+					""" Update set of variables """
 					var,col = key
 					if not var in included_vars:
 						num_vars = var.setIndex(num_vars)
 						included_vars[var] = 0
-		# Update counts to pass back
+		""" Update counts to pass back """
 		total_and_nnz[0], total_and_nnz[1], total_and_nnz[2] = num_vars, var_nnz, const_nnz
 
+	""" Formatted access to data for problem solving """
 	def getLinear(self,value_data,row_data,col_data,cur_row_and_entry):
 		cur_row, cur_entry = cur_row_and_entry
 		for j in range(self.cols):
@@ -115,7 +130,6 @@ class Affine:
 		cur_row_and_entry[0],cur_row_and_entry[1] = cur_row, cur_entry
 	
 	""" Functions to shape the affine expression """
-	
 	def T(self):
 		"""
 			Returns this affine transposed, probably runs slowly because of
@@ -277,11 +291,10 @@ class Affine:
 			self.iter_index += 1
 			return self[(self.iter_index-1)%self.rows,(self.iter_index-1)//self.rows]
 
-
 """
 This method returns a scalar affine which is the mean of the argument
 """
 def mean(aff):
 	if not isinstance(aff, Affine):
 		raise RuntimeError('Invalid argument to mean, requires an Affine')
-	return sum(aff)/self.rows/self.cols
+	return sum(aff)/aff.numElem()
