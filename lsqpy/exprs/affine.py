@@ -203,37 +203,6 @@ class Affine:
 				new_affine.vectors[j][key] = val * self.vectors[j][key]
 		return new_affine
 
-	def lMulMat(self,mat):
-		""" Perform mat*self """
-		mat_shape = mutils.getShape(mat)
-		if not mat_shape[1] == self.rows:
-			raise RuntimeError('Multiplication failed due to size mismatch ' +
-				str(mat_shape) + ' * ' + str(self.size()))
-		new_affine = Affine(mat_shape[0],self.cols)
-		mat = sparse.csc_matrix(mat)
-		for j in range(self.cols):
-			for key in self.vectors[j]:
-				new_affine.vectors[j][key] = mat.dot(self.vectors[j][key])
-		return new_affine
-
-	def rMulMat(self,mat):
-		"""
-			Perform self*mat. This is done by individually evaluating each column
-			of the new matrix as a weighted sum of the columns of self. This is
-			not efficient and so it is recommended to avoid this if possible.
-		"""
-		mat_shape = mutils.getShape(mat)
-		if not mat_shape[0] == self.cols:
-			raise RuntimeError('Multiplication failed due to size mismatch ' +
-				str(self.size()) + ' * ' + str(mat_shape))
-		new_affine = Affine(self.rows,mat_shape[1])
-		for j in range(mat_shape[1]):
-			new_affine_col = sum([mat[i,j]*self[:,i] for i in range(self.cols)])
-			""" new_affine_col is always a vector of length self.rows """
-			for key in new_affine_col[0]:
-				new_affine[j][key] = new_affine_col[0][key]
-		return new_affine
-
 	""" Overload the rest of the operators """
 	def __eq__(self,other): return EqConstraint(self,other)
 	def __neg__(self): return self.scale(-1)
@@ -269,11 +238,36 @@ class Affine:
 		return self.__neg__().__add__(other)
 
 	def __mul__(self,other):
+		"""
+			Perform self*other. This is done by individually evaluating each column
+			of the new matrix as a weighted sum of the columns of self. This is
+			not efficient and so it is recommended to avoid this if possible.
+		"""
 		if isScalar(other): return self.scale(other)
-		else: return self.rMulMat(other)
+		mat_shape = mutils.getShape(mat)
+		if not mat_shape[0] == self.cols:
+			raise RuntimeError('Multiplication failed due to size mismatch ' +
+				str(self.size()) + ' * ' + str(mat_shape))
+		new_affine = Affine(self.rows,mat_shape[1])
+		for j in range(mat_shape[1]):
+			new_affine_col = sum([mat[i,j]*self[:,i] for i in range(self.cols)])
+			""" new_affine_col is always a vector of length self.rows """
+			for key in new_affine_col[0]:
+				new_affine[j][key] = new_affine_col[0][key]
+		return new_affine
 	def __rmul__(self,other):
+		""" Perform mat*self """
 		if isScalar(other): return self.scale(other)
-		else: return self.lMulMat(other)
+		mat_shape = mutils.getShape(mat)
+		if not mat_shape[1] == self.rows:
+			raise RuntimeError('Multiplication failed due to size mismatch ' +
+				str(mat_shape) + ' * ' + str(self.size()))
+		new_affine = Affine(mat_shape[0],self.cols)
+		mat = sparse.csc_matrix(mat)
+		for j in range(self.cols):
+			for key in self.vectors[j]:
+				new_affine.vectors[j][key] = mat.dot(self.vectors[j][key])
+		return new_affine
 	
 	""" Code to make affine iterable (for sum) """
 	def __iter__(self):
