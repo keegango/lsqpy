@@ -250,10 +250,10 @@ class Affine:
 				str(self.size()) + ' * ' + str(mat_shape))
 		new_affine = Affine(self.rows,mat_shape[1])
 		for j in range(mat_shape[1]):
-			new_affine_col = sum([other[i,j]*self[:,i] for i in range(self.cols)])
+			new_affine_col = sum([float(other[i,j])*self[:,i] for i in range(self.cols)])
 			""" new_affine_col is always a vector of length self.rows """
-			for key in new_affine_col[0]:
-				new_affine[j][key] = new_affine_col[0][key]
+			for key in new_affine_col.vectors[0]:
+				new_affine.vectors[j][key] = new_affine_col.vectors[0][key]
 		return new_affine
 	def __rmul__(self,other):
 		""" Perform other*self """
