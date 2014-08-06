@@ -276,3 +276,12 @@ class Affine:
 		else:
 			self.iter_index += 1
 			return self[(self.iter_index-1)%self.rows,(self.iter_index-1)//self.rows]
+
+
+"""
+This method returns a scalar affine which is the mean of the argument
+"""
+def mean(aff):
+	if not isinstance(aff, Affine):
+		raise RuntimeError('Invalid argument to mean, requires an Affine')
+	return sum(aff)/self.rows/self.cols

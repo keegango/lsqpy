@@ -3,7 +3,7 @@ Class to represent normsq expressions that that are made up of a
 sum of sum_squares(affine) terms
 """
 
-from lsqpy.exprs.affine import Affine
+from lsqpy.exprs.affine import Affine, mean
 import math
 
 class SumSqExpr:
@@ -37,4 +37,11 @@ def sum_squares(affine_term):
 		else: affine_term = [affine_term]
 	new_sumsq_expr = SumSqExpr()
 	new_sumsq_expr.sq_terms = affine_term
+	return new_sumsq_expr
+
+def variance(affine_term):
+	if not isinstance(aff, Affine):
+		raise RuntimeError('Invalid argument to variance, requires an Affine')
+	new_sumsq_expr = SumSqExpr()
+	new_sumsq_expr.sq_terms = [sum(aff - mean(aff))]
 	return new_sumsq_expr
