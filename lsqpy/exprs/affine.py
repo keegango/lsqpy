@@ -153,8 +153,7 @@ class Affine:
 
 	def reshape(self,new_rows,new_cols):
 		if new_rows * new_cols != self.rows*self.cols:
-			print("Number of elements does not match in reshape")
-			return None
+			raise RuntimeError('Number of elements does not match in reshape')
 		new_affine = Affine(new_rows,new_cols)
 		for j in range(self.cols):
 			for key in self.vectors[j]:
@@ -170,8 +169,7 @@ class Affine:
 	
 	def broadcast(self,new_rows,new_cols):
 		if not self.isScalar():
-			print("Cannot broadcast a matrix")
-			return None
+			raise RuntimeError('Attempted to broadcast a matrix, only scalar broadcsting supported')
 		new_affine = Affine(new_rows,new_cols)
 		for key in self.vectors[0]:
 			new_mat = sparse.vstack([self.vectors[0][key] for _ in range(new_rows)])
@@ -184,7 +182,7 @@ class Affine:
 		if not isinstance(indices,tuple):
 			if self.rows == 1: indices = (slice(0,1,1),indices)
 			elif self.cols == 1: indices = (indices,slice(0,1,1))
-			else: raise IndexError("Invalid index")
+			else: raise IndexError("Invalid indexing")
 		indices = iutils.formatSlices(indices,(self.rows,self.cols))
 		if indices[0].stop > self.rows or indices[1].stop > self.cols: raise IndexError("Invalid index")
 		new_num_rows = iutils.numElem(indices[0],self.rows)
@@ -201,20 +199,21 @@ class Affine:
 	def scale(self,val):
 		new_affine = Affine(self.rows,self.cols)
 		for j in range(self.cols):
-			for key in self.vectors[j]: new_affine.vectors[j][key] = val * self.vectors[j][key]
+			for key in self.vectors[j]:
+				new_affine.vectors[j][key] = val * self.vectors[j][key]
 		return new_affine
 
 	def lMulMat(self,mat):
 		""" Perform mat*self """
 		mat_shape = mutils.getShape(mat)
 		if not mat_shape[1] == self.rows:
-			print('Warning: matrix multiplication failed due to size mismatch')
-			print(str(mat_shape) + ' * ' + str(self.size()))
-			return None
+			raise RuntimeError('Multiplication failed due to size mismatch ' +
+				str(mat_shape) + ' * ' + str(self.size()))
 		new_affine = Affine(mat_shape[0],self.cols)
 		mat = sparse.csc_matrix(mat)
 		for j in range(self.cols):
-			for key in self.vectors[j]: new_affine.vectors[j][key] = mat.dot(self.vectors[j][key])
+			for key in self.vectors[j]:
+				new_affine.vectors[j][key] = mat.dot(self.vectors[j][key])
 		return new_affine
 
 	def rMulMat(self,mat):
@@ -225,9 +224,8 @@ class Affine:
 		"""
 		mat_shape = mutils.getShape(mat)
 		if not mat_shape[0] == self.cols:
-			print('Warning: matrix multiplication failed due to size mismatch')
-			print(str(self.size()) + ' * ' + str(mat_shape))
-			return None
+			raise RuntimeError('Multiplication failed due to size mismatch ' +
+				str(self.size()) + ' * ' + str(mat_shape))
 		new_affine = Affine(self.rows,mat_shape[1])
 		for j in range(mat_shape[1]):
 			new_affine_col = sum([mat[i,j]*self[:,i] for i in range(self.cols)])
@@ -244,13 +242,14 @@ class Affine:
 		if isValidConst(other): other = constToAffine(other,self.rows,self.cols)
 		
 		""" If one of the expressions is a scalar, broadcast it """
-		if self.isScalar() and not other.isScalar(): return self.broadcast(other.rows,other.cols)+other
-		elif other.isScalar() and not self.isScalar(): return self+other.broadcast(self.rows,self.cols)
+		if self.isScalar() and not other.isScalar():
+			return self.broadcast(other.rows,other.cols)+other
+		elif other.isScalar() and not self.isScalar():
+			return self+other.broadcast(self.rows,self.cols)
 		
 		if not self.rows == other.rows or not self.cols == other.cols:
-			print('Warning: matrix add/sub failed due to size mismatch')
-			print(str(self.size()) + ' + ' + str(other.size()))
-			return None
+			raise RuntimeError('Matrix add/sub failed due to size mismatch ' + 
+				str(self.size()) + ' + ' + str(other.size()))
 		
 		""" Copy new keys """
 		new_affine = Affine(self.rows,self.cols)
@@ -279,8 +278,7 @@ class Affine:
 	""" Code to make affine iterable (for sum) """
 	def __iter__(self):
 		if self.rows == 1 and self.cols == 1:
-			print('Scalar variables are not iterable')
-			return None
+			raise RuntimeError('Scalar variables are not iterable')
 		self.iter_index = 0
 		return self
 	def __next__(self):
