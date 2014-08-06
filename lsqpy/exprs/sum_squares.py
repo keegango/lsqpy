@@ -22,8 +22,7 @@ class SumSqExpr:
 	""" Multiplication is scaling each square term by sqrt(other) and the affine by other """
 	def __mul__(self,other):
 		if other < 0:
-			print("Can only multiply a sum_squares expression by a positive constant")
-			return None
+			raise RuntimeError('A sum_squares expression can only be multiplied by non-negative constants')
 		new_sq_expr = SumSqExpr()
 		const = math.sqrt(other)
 		new_sq_expr.sq_terms = [const*aff for aff in self.sq_terms]
@@ -33,7 +32,8 @@ class SumSqExpr:
 
 def sum_squares(affine_term):
 	if not isinstance(affine_term,list):
-		if not isinstance(affine_term,Affine): print('Invalid argument to sum_squares')
+		if not isinstance(affine_term,Affine):
+			raise RuntimeError('sum_squares takes only an Affine or a list of Affine')
 		else: affine_term = [affine_term]
 	new_sumsq_expr = SumSqExpr()
 	new_sumsq_expr.sq_terms = affine_term
@@ -41,7 +41,7 @@ def sum_squares(affine_term):
 
 def variance(affine_term):
 	if not isinstance(aff, Affine):
-		raise RuntimeError('Invalid argument to variance, requires an Affine')
+		raise RuntimeError('variance takes only an Affine or a list of Affine')
 	new_sumsq_expr = SumSqExpr()
 	new_sumsq_expr.sq_terms = [sum(aff - mean(aff))]
 	return new_sumsq_expr
